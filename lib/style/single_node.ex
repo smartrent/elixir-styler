@@ -161,13 +161,23 @@ defmodule Styler.Style.SingleNode do
     {{:., dm, [{:__aliases__, am, [mod]}, fun]}, funm, args}
   end
 
-  # Remove parens from 0 arity funs (Credo.Check.Readability.ParenthesesOnZeroArityDefs)
-  defp style({def, dm, [{fun, funm, []} | rest]}) when def in ~w(def defp)a and is_atom(fun),
-    do: style({def, dm, [{fun, Keyword.delete(funm, :closing), nil} | rest]})
-
   # `Credo.Check.Readability.PreferImplicitTry`
   defp style({def, dm, [head, [{_, {:try, _, [try_children]}}]]}) when def in ~w(def defp)a,
     do: style({def, dm, [head, try_children]})
+
+  # Remove parens from 0 arity funs (Credo.Check.Readability.ParenthesesOnZeroArityDefs)
+  defp style({def, dm, [{fun, funm, []} | rest]} = node) when def in ~w(def defp)a and is_atom(fun) do
+    if Styler.Config.zero_arity_parens?(),
+      do: node,
+      else: style({def, dm, [{fun, Keyword.delete(funm, :closing), nil} | rest]})
+  end
+
+  # Add parens to 0 arity funs (Credo.Check.Readability.ParenthesesOnZeroArityDefs)
+  defp style({def, dm, [{fun, funm, nil} | rest]} = node) when def in ~w(def defp)a and is_atom(fun) do
+    if Styler.Config.zero_arity_parens?(),
+      do: {def, dm, [{fun, Keyword.put(funm, :closing, line: funm[:line]), []} | rest]},
+      else: node
+  end
 
   defp style({def, dm, [{fun, funm, params} | rest]}) when def in ~w(def defp)a,
     do: {def, dm, [{fun, funm, put_matches_on_right(params)} | rest]}

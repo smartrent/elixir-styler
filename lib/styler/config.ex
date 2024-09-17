@@ -42,8 +42,11 @@ defmodule Styler.Config do
       end)
       |> MapSet.union(@stdlib)
 
+    zero_arity_parens = config[:zero_arity_parens]
+
     :persistent_term.put(@key, %{
-      lifting_excludes: excludes
+      lifting_excludes: excludes,
+      zero_arity_parens: zero_arity_parens
     })
   end
 
@@ -51,5 +54,9 @@ defmodule Styler.Config do
     @key
     |> :persistent_term.get()
     |> Map.fetch!(key)
+  end
+
+  def zero_arity_parens? do
+    get(:zero_arity_parens)
   end
 end

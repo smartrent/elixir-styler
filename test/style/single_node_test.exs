@@ -136,6 +136,13 @@ defmodule Styler.Style.SingleNodeTest do
       assert_style("def metaprogramming(foo)(), do: bar")
     end
 
+    test "0-arity functions have parens when zero_arity_parens is enabled" do
+      Styler.Config.set!(zero_arity_parens: true)
+      assert_style("def foo, do: :ok", "def foo(), do: :ok")
+      assert_style("defp foo, do: :ok", "defp foo(), do: :ok")
+      Styler.Config.set!(zero_arity_parens: false)
+    end
+
     test "prefers implicit try" do
       for def_style <- ~w(def defp) do
         assert_style(
