@@ -20,14 +20,14 @@ defmodule Styler.Style.StylesTest do
         """
         foo
         |> bar(fn baz ->
-          def widget() do
+          def widget do
             :bop
           end
         end)
         """,
         """
         bar(foo, fn baz ->
-          def widget do
+          def widget() do
             :bop
           end
         end)

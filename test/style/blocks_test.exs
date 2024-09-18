@@ -317,7 +317,7 @@ defmodule Styler.Style.BlocksTest do
         end
         """,
         """
-        def run do
+        def run() do
           arg
         end
         """

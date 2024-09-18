@@ -31,7 +31,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
         alias A.B.C
 
         @spec bar :: C.t()
-        def bar do
+        def bar() do
           C.f()
         end
       end
@@ -118,7 +118,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
 
         require C
 
-        def foo do
+        def foo() do
           C.bop()
         end
       end
@@ -169,7 +169,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
         @moduledoc false
         alias A.B.C
 
-        def lift_me do
+        def lift_me() do
           C.foo()
           C.baz()
         end

@@ -25,7 +25,7 @@ You can learn more about the history, purpose and implementation of Styler from 
 
 ## Who is Styler for?
 
-Styler was designed for a **large team (40+ engineers) working in a single codebase. It helps remove fiddly code review comments and removes failed linter CI slowdowns, helping teams get things done faster. Teams in similar situations might appreciate Styler.
+Styler was designed for a \*\*large team (40+ engineers) working in a single codebase. It helps remove fiddly code review comments and removes failed linter CI slowdowns, helping teams get things done faster. Teams in similar situations might appreciate Styler.
 
 Its automations are also extremely valuable for taming legacy elixir codebases or just refactoring in general. Some of its rewrites have inspired code actions in elixir language servers.
 
@@ -71,13 +71,9 @@ Styler can be configured in your `.formatter.exs` file
 ]
 ```
 
-Styler's only current configuration option is `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
+Styler has one configuration options:
 
-#### No Credo-Style Enable/Disable
-
-Styler [will not add configuration](https://github.com/adobe/elixir-styler/pull/127#issuecomment-1912242143) for ad-hoc enabling/disabling of rewrites. Sorry! Its implementation simply does not support that approach. There are however many forks out there that have attempted this; please explore the [Github forks tab](https://github.com/adobe/elixir-styler/forks) to see if there's a project that suits your needs or that you can draw inspiration from.
-
-Ultimately Styler is @adobe's internal tool that we're happy to share with the world. We're delighted if you like it as is, and just as excited if it's a starting point for you to make something even better for yourself.
+- `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
 
 ## WARNING: Styler can change the behaviour of your program!
 
