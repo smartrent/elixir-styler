@@ -67,6 +67,8 @@ Styler can be configured in your `.formatter.exs` file
   plugins: [Styler],
   styler: [
     alias_lifting_exclude: [...],
+    rewrite_case_to_if: false,
+    reorder_configs: false,
     sort_order: :ascii | :alpha,
     zero_arity_parens: true
   ]
@@ -76,6 +78,8 @@ Styler can be configured in your `.formatter.exs` file
 Styler has several configuration options:
 
 - `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
+- `:rewrite_case_to_if`, which controls whether or not to rewrite `case` statements to `if` statements. Defaults to true.
+- `:reorder_configs`, which controls whether or not to reorder `config` statements. Defaults to true.
 - `:sort_order`, which controls the sorting order of module directives. Defaults to `:alpha`.
 - `:zero_arity_parens`, which controls whether or not zero-arity functions should have parens. Defaults to false. See the [Single Node documentation](docs/styles.md#remove-or-add-parenthesis-from-0-arity-functions-and-macro-definitions) for more.
 

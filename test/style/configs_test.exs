@@ -14,6 +14,8 @@ defmodule Styler.Style.ConfigsTest do
 
   alias Styler.Style.Configs
 
+  require Logger
+
   test "only runs on exs files in config folders" do
     {ast, _} = Styler.string_to_quoted_with_comments("import Config\n\nconfig :bar, boop: :baz")
     zipper = Styler.Zipper.zip(ast)
@@ -172,6 +174,26 @@ defmodule Styler.Style.ConfigsTest do
         config :b, 2
         """
       )
+    end
+
+    test "does not reorder simple case if rewrite_if_to_unless is false" do
+      Styler.Config.set!(reorder_configs: false)
+      assert_style(
+        """
+        import Config
+
+        config :a, 1
+        config :a, 4
+        # comment
+        # b comment
+        config :b, 1
+        config :b, 2
+        config :a, 2
+        config :a, 3
+        """
+      )
+
+      Styler.Config.set!(reorder_configs: true)
     end
 
     test "complicated comments" do

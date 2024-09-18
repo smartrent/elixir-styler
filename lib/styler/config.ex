@@ -19,6 +19,16 @@ defmodule Styler.Config do
     Range Record Regex Registry Set Stream String StringIO Supervisor System Task Time Tuple URI Version
   )a)
 
+  @styles [
+    Styler.Style.ModuleDirectives,
+    Styler.Style.Pipes,
+    Styler.Style.SingleNode,
+    Styler.Style.Defs,
+    Styler.Style.Blocks,
+    Styler.Style.Deprecations,
+    Styler.Style.Configs
+  ]
+
   def set(config) do
     :persistent_term.get(@key)
     :ok
@@ -44,9 +54,13 @@ defmodule Styler.Config do
 
     zero_arity_parens = config[:zero_arity_parens]
     sort_order = config[:sort_order] || :alpha
+    rewrite_case_to_if = if is_nil(config[:rewrite_case_to_if]), do: true, else: config[:rewrite_case_to_if]
+    reorder_configs = if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
 
     :persistent_term.put(@key, %{
+      rewrite_case_to_if: rewrite_case_to_if,
       lifting_excludes: excludes,
+      reorder_configs: reorder_configs,
       sort_order: sort_order,
       zero_arity_parens: zero_arity_parens
     })
@@ -65,4 +79,15 @@ defmodule Styler.Config do
   def sort_order do
     get(:sort_order)
   end
+
+  def rewrite_case_to_if? do
+    get(:rewrite_case_to_if)
+  end
+
+  def get_styles do
+    maybe_exclude(@styles, Styler.Style.Configs, get(:reorder_configs))
+  end
+
+  defp maybe_exclude(list, _elem, true), do: list
+  defp maybe_exclude(list, elem, false), do: list -- [elem]
 end

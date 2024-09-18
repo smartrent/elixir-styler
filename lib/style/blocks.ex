@@ -35,7 +35,7 @@ defmodule Styler.Style.Blocks do
   # case statement with exactly 2 `->` cases
   # rewrite to `if` if it's any of 3 trivial cases
   def run({{:case, _, [head, [{_, [{:->, _, [[lhs_a], a]}, {:->, _, [[lhs_b], b]}]}]]}, _} = zipper, ctx) do
-    case {lhs_a, lhs_b} do
+    case Styler.Config.rewrite_case_to_if?() && {lhs_a, lhs_b} do
       {{_, _, [true]}, {_, _, [false]}} -> if_ast(zipper, head, a, b, ctx)
       {{_, _, [true]}, {:_, _, _}} -> if_ast(zipper, head, a, b, ctx)
       {{_, _, [false]}, {_, _, [true]}} -> if_ast(zipper, head, b, a, ctx)
