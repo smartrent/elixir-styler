@@ -92,7 +92,7 @@ defmodule Styler do
   # Turns an ast and comments back into code, formatting it along the way.
   def quoted_to_string(ast, comments, formatter_opts \\ []) do
     opts = [{:comments, comments}, {:escape, false} | formatter_opts]
-    {line_length, opts} = Keyword.pop(opts, :line_length, 122)
+    {line_length, opts} = Keyword.pop(opts, :line_length, 120)
 
     formatted =
       ast
