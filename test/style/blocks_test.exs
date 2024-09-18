@@ -833,10 +833,18 @@ defmodule Styler.Style.BlocksTest do
       """)
     end
 
-    test "if not => unless" do
+    test "if not => unless when rewrite_if_to_unless is true" do
+      Styler.Config.set!(rewrite_if_to_unless: true)
       assert_style("if not x, do: y", "unless x, do: y")
       assert_style("if !x, do: y", "unless x, do: y")
       assert_style("if !!x, do: y", "if x, do: y")
+      Styler.Config.set!(rewrite_if_to_unless: false)
+    end
+
+    test "if not => unless when rewrite_if_to_unless is false" do
+      assert_style("if not x, do: y")
+      assert_style("if !x, do: y")
+      assert_style("if !!x, do: y")
     end
 
     test "Credo.Check.Refactor.UnlessWithElse" do
@@ -1011,7 +1019,9 @@ defmodule Styler.Style.BlocksTest do
         """
       )
 
+      Styler.Config.set!(rewrite_if_to_unless: true)
       assert_style("if not (a != b), do: c", "if a == b, do: c")
+      Styler.Config.set!(rewrite_if_to_unless: false)
     end
 
     test "comments and flips" do

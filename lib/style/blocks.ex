@@ -197,9 +197,13 @@ defmodule Styler.Style.Blocks do
       [negator, [{do_, do_body}, {else_, else_body}]] when is_negator(negator) ->
         zipper |> Zipper.replace({:if, m, [invert(negator), [{do_, else_body}, {else_, do_body}]]}) |> run(ctx)
 
-      # if not x, do: y => unless x, do: y
+      # if not x, do: y => unless x, do: y when rewrite_if_to_unless is true
       [negator, [do_block]] when is_negator(negator) ->
-        zipper |> Zipper.replace({:unless, m, [invert(negator), [do_block]]}) |> run(ctx)
+        if Styler.Config.rewrite_if_to_unless?() do
+          zipper |> Zipper.replace({:unless, m, [invert(negator), [do_block]]}) |> run(ctx)
+        else
+          {:cont, zipper, ctx}
+        end
 
       # drop `else: nil`
       [head, [do_block, {_, {:__block__, _, [nil]}}]] ->

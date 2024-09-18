@@ -54,13 +54,15 @@ defmodule Styler.Config do
 
     zero_arity_parens = config[:zero_arity_parens]
     sort_order = config[:sort_order] || :alpha
-    rewrite_case_to_if = if is_nil(config[:rewrite_case_to_if]), do: true, else: config[:rewrite_case_to_if]
     reorder_configs = if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
+    rewrite_case_to_if = if is_nil(config[:rewrite_case_to_if]), do: true, else: config[:rewrite_case_to_if]
+    rewrite_if_to_unless = config[:rewrite_if_to_unless] || false
 
     :persistent_term.put(@key, %{
       rewrite_case_to_if: rewrite_case_to_if,
       lifting_excludes: excludes,
       reorder_configs: reorder_configs,
+      rewrite_if_to_unless: rewrite_if_to_unless,
       sort_order: sort_order,
       zero_arity_parens: zero_arity_parens
     })
@@ -82,6 +84,10 @@ defmodule Styler.Config do
 
   def rewrite_case_to_if? do
     get(:rewrite_case_to_if)
+  end
+
+  def rewrite_if_to_unless? do
+    get(:rewrite_if_to_unless)
   end
 
   def get_styles do
