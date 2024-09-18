@@ -10,6 +10,7 @@
 
 defmodule Styler.Config do
   @moduledoc false
+
   @key __MODULE__
 
   @stdlib MapSet.new(~w(
@@ -27,6 +28,9 @@ defmodule Styler.Config do
   end
 
   def set!(config) do
+    credo_config = read_credo_config()
+    sort_order = get_sort_order_from_credo(credo_config) || :alpha
+
     excludes =
       config[:alias_lifting_exclude]
       |> List.wrap()
@@ -42,12 +46,15 @@ defmodule Styler.Config do
       end)
       |> MapSet.union(@stdlib)
 
-    sort_order = config[:sort_order] || :alpha
-
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
       sort_order: sort_order
     })
+  end
+
+  def set_for_test!(key, value) do
+    current_vals = :persistent_term.get(@key, %{})
+    :persistent_term.put(@key, Map.put(current_vals, key, value))
   end
 
   def get(key) do
@@ -58,5 +65,26 @@ defmodule Styler.Config do
 
   def sort_order do
     get(:sort_order)
+  end
+
+  defp read_credo_config do
+    if File.exists?(".credo.exs") do
+      {config, _} = Code.eval_file(".credo.exs")
+      config
+    else
+      %{}
+    end
+  end
+
+  defp get_sort_order_from_credo(credo_config) do
+    credo_checks = get_in(credo_config, [:configs, Access.at(0), :checks]) || []
+
+    Enum.find_value(credo_checks, fn
+      {Credo.Check.Readability.AliasOrder, opts} when is_list(opts) ->
+        Keyword.get(opts, :sort_method)
+
+      _ ->
+        nil
+    end)
   end
 end

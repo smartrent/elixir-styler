@@ -231,7 +231,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
   end
 
   test "sorts in ascii order when sort_order is :ascii" do
-    Styler.Config.set!(sort_order: :ascii)
+    Styler.Config.set_for_test!(:sort_order, :ascii)
 
     assert_style(
       """
@@ -259,7 +259,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
       """
     )
 
-    Styler.Config.set!(sort_order: :alpha)
+    Styler.Config.set_for_test!(:sort_order, :alpha)
   end
 
   describe "comments stay put" do
