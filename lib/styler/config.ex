@@ -42,8 +42,11 @@ defmodule Styler.Config do
       end)
       |> MapSet.union(@stdlib)
 
+    sort_order = config[:sort_order] || :alpha
+
     :persistent_term.put(@key, %{
-      lifting_excludes: excludes
+      lifting_excludes: excludes,
+      sort_order: sort_order
     })
   end
 
@@ -51,5 +54,9 @@ defmodule Styler.Config do
     @key
     |> :persistent_term.get()
     |> Map.fetch!(key)
+  end
+
+  def sort_order do
+    get(:sort_order)
   end
 end
