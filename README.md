@@ -67,14 +67,16 @@ Styler can be configured in your `.formatter.exs` file
   plugins: [Styler],
   styler: [
     alias_lifting_exclude: [...],
+    sort_order: :ascii | :alpha,
     zero_arity_parens: true
   ]
 ]
 ```
 
-Styler has two configuration options:
+Styler has several configuration options:
 
 - `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
+- `:sort_order`, which controls the sorting order of module directives. Defaults to `:alpha`.
 - `:zero_arity_parens`, which controls whether or not zero-arity functions should have parens. Defaults to false. See the [Single Node documentation](docs/styles.md#remove-or-add-parenthesis-from-0-arity-functions-and-macro-definitions) for more.
 
 ## WARNING: Styler can change the behaviour of your program!
