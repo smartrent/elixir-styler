@@ -178,26 +178,12 @@ after
 end
 ```
 
-## Remove or add parenthesis from 0-arity functions and macro definitions
+## Add parenthesis to 0-arity functions and macro definitions
 
-If `zero_arity_parens` is `true` in the config, styler will add parens to 0-arity function & macro definitions. If `zero_arity_parens` is `false` in the config, styler will remove parens from 0-arity function & macro definitions. The default is `false`.
-
-```elixir
-# Before (zero_arity_parens: false)
-def foo()
-defp foo()
-defmacro foo()
-defmacrop foo()
-
-# Styled
-def foo
-defp foo
-defmacro foo
-defmacrop foo
-```
+The styler will add parens to 0-arity function & macro definitions.
 
 ```elixir
-# Before (zero_arity_parens: true)
+# Before
 def foo
 defp foo
 defmacro foo

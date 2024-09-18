@@ -102,18 +102,18 @@ defmodule Styler.Style.SingleNodeTest do
   end
 
   describe "def / defp" do
-    test "0-arity functions have parens removed" do
-      assert_style("def foo(), do: :ok", "def foo, do: :ok")
-      assert_style("defp foo(), do: :ok", "defp foo, do: :ok")
+    test "0-arity functions have parens added" do
+      assert_style("def foo, do: :ok", "def foo(), do: :ok")
+      assert_style("defp foo, do: :ok", "defp foo(), do: :ok")
 
       assert_style(
         """
-        def foo() do
+        def foo do
         :ok
         end
         """,
         """
-        def foo do
+        def foo() do
           :ok
         end
         """
@@ -121,12 +121,12 @@ defmodule Styler.Style.SingleNodeTest do
 
       assert_style(
         """
-        defp foo() do
+        defp foo do
         :ok
         end
         """,
         """
-        defp foo do
+        defp foo() do
           :ok
         end
         """
@@ -134,13 +134,6 @@ defmodule Styler.Style.SingleNodeTest do
 
       # Regression: be wary of invocations with extra parens from metaprogramming
       assert_style("def metaprogramming(foo)(), do: bar")
-    end
-
-    test "0-arity functions have parens when zero_arity_parens is enabled" do
-      Styler.Config.set!(zero_arity_parens: true)
-      assert_style("def foo, do: :ok", "def foo(), do: :ok")
-      assert_style("defp foo, do: :ok", "defp foo(), do: :ok")
-      Styler.Config.set!(zero_arity_parens: false)
     end
 
     test "prefers implicit try" do
@@ -162,7 +155,7 @@ defmodule Styler.Style.SingleNodeTest do
           end
           """,
           """
-          #{def_style} foo do
+          #{def_style} foo() do
             :ok
           rescue
             exception -> :excepted
@@ -180,7 +173,7 @@ defmodule Styler.Style.SingleNodeTest do
 
     test "doesnt rewrite when there are other things in the body" do
       assert_style("""
-      def foo do
+      def foo() do
         try do
           :ok
         rescue

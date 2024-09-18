@@ -66,16 +66,14 @@ Styler can be configured in your `.formatter.exs` file
 [
   plugins: [Styler],
   styler: [
-    alias_lifting_exclude: [...],
-    zero_arity_parens: true
+    alias_lifting_exclude: [...]
   ]
 ]
 ```
 
-Styler has two configuration options:
+Styler has one configuration options:
 
 - `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
-- `:zero_arity_parens`, which controls whether or not zero-arity functions should have parens. Defaults to false. See the [Single Node documentation](docs/styles.md#remove-or-add-parenthesis-from-0-arity-functions-and-macro-definitions) for more.
 
 ## WARNING: Styler can change the behaviour of your program!
 

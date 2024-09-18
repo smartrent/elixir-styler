@@ -98,7 +98,7 @@ defmodule Styler.Style.DefsTest do
     end
 
     test "no body" do
-      assert_style "def no_body_nor_parens_yikes!"
+      assert_style "def no_body_nor_parens_yikes!()"
 
       assert_style(
         """
@@ -156,7 +156,7 @@ defmodule Styler.Style.DefsTest do
         """,
         """
         # Weirdo comment
-        def foo, do: [:never_write_code_like_this]
+        def foo(), do: [:never_write_code_like_this]
         """
       )
     end
@@ -164,7 +164,7 @@ defmodule Styler.Style.DefsTest do
     test "rewrites subsequent definitions" do
       assert_style(
         """
-        def foo(), do: :ok
+        def foo, do: :ok
 
         def foo(
           too,
@@ -173,7 +173,7 @@ defmodule Styler.Style.DefsTest do
         ), do: :ok
         """,
         """
-        def foo, do: :ok
+        def foo(), do: :ok
 
         # Long long is too long
         def foo(too, long), do: :ok
@@ -221,7 +221,7 @@ defmodule Styler.Style.DefsTest do
 
       @doc "this is another function"
       # And it also has a comment
-      def this_one_fits_on_one_line, do: :ok
+      def this_one_fits_on_one_line(), do: :ok
       """)
     end
 
