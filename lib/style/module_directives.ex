@@ -411,9 +411,15 @@ defmodule Styler.Style.ModuleDirectives do
   defp expand(other), do: [other]
 
   defp sort(directives) do
-    # sorting is done with `downcase` to match Credo
-    directives
-    |> Enum.map(&{&1, &1 |> Macro.to_string() |> String.downcase()})
+    directive_strings =
+      if Styler.Config.sort_order() == :ascii do
+        Enum.map(directives, &{&1, Macro.to_string(&1)})
+      else
+        # sorting is done with `downcase` to match Credo
+        Enum.map(directives, &{&1, &1 |> Macro.to_string() |> String.downcase()})
+      end
+
+    directive_strings
     |> Enum.uniq_by(&elem(&1, 1))
     |> List.keysort(1)
     |> Enum.map(&elem(&1, 0))

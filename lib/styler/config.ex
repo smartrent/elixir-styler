@@ -43,9 +43,11 @@ defmodule Styler.Config do
       |> MapSet.union(@stdlib)
 
     zero_arity_parens = config[:zero_arity_parens]
+    sort_order = config[:sort_order] || :alpha
 
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
+      sort_order: sort_order,
       zero_arity_parens: zero_arity_parens
     })
   end
@@ -58,5 +60,9 @@ defmodule Styler.Config do
 
   def zero_arity_parens? do
     get(:zero_arity_parens)
+  end
+
+  def sort_order do
+    get(:sort_order)
   end
 end
