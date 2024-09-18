@@ -25,14 +25,14 @@ Formatter already does this except it doesn't rewrite "typos" like `100_000_0`.
 If you're concerned that this breaks your team's formatting for things like "cents" (like "$100" being written as `100_00`),
 consider using a library made for denoting currencies rather than raw elixir integers.
 
-| Before | After |
-|--------|-------|
-| `10000 ` | `10_000`|
-| `1_0_0_0_0` | `10_000` (elixir's formatter leaves the former as-is)|
-| `-543213 ` | `-543_213`|
-| `123456789 ` | `123_456_789`|
-| `55333.22 ` | `55_333.22`|
-| `-123456728.0001 ` | `-123_456_728.0001`|
+| Before             | After                                                 |
+| ------------------ | ----------------------------------------------------- |
+| `10000 `           | `10_000`                                              |
+| `1_0_0_0_0`        | `10_000` (elixir's formatter leaves the former as-is) |
+| `-543213 `         | `-543_213`                                            |
+| `123456789 `       | `123_456_789`                                         |
+| `55333.22 `        | `55_333.22`                                           |
+| `-123456728.0001 ` | `-123_456_728.0001`                                   |
 
 ## `Enum.into` -> `X.new`
 
@@ -42,15 +42,15 @@ This is an improvement for the reader, who gets a more natural language expressi
 
 Note that all of the examples below also apply to pipes (`enum |> Enum.into(...)`)
 
-| Before | After |
-|--------|-------|
-| `Enum.into(enum, %{})` | `Map.new(enum)`|
-| `Enum.into(enum, Map.new())` | `Map.new(enum)`|
-| `Enum.into(enum, Keyword.new())` | `Keyword.new(enum)`|
-| `Enum.into(enum, MapSet.new())` | `Keyword.new(enum)`|
-| `Enum.into(enum, %{}, fn x -> {x, x} end)` | `Map.new(enum, fn x -> {x, x} end)`|
-| `Enum.into(enum, [])` | `Enum.to_list(enum)` |
-| `Enum.into(enum, [], mapper)` | `Enum.map(enum, mapper)`|
+| Before                                     | After                               |
+| ------------------------------------------ | ----------------------------------- |
+| `Enum.into(enum, %{})`                     | `Map.new(enum)`                     |
+| `Enum.into(enum, Map.new())`               | `Map.new(enum)`                     |
+| `Enum.into(enum, Keyword.new())`           | `Keyword.new(enum)`                 |
+| `Enum.into(enum, MapSet.new())`            | `Keyword.new(enum)`                 |
+| `Enum.into(enum, %{}, fn x -> {x, x} end)` | `Map.new(enum, fn x -> {x, x} end)` |
+| `Enum.into(enum, [])`                      | `Enum.to_list(enum)`                |
+| `Enum.into(enum, [], mapper)`              | `Enum.map(enum, mapper)`            |
 
 ## Map/Keyword.merge w/ single key literal -> X.put
 
@@ -81,6 +81,7 @@ map |> Map.put(:key, value) |> foo()
 ## Map/Keyword.drop w/ single key -> X.delete
 
 In the same vein as the `merge` style above, `[Map|Keyword].drop/2` with a single key to drop are rewritten to use `delete/2`
+
 ```elixir
 # Before
 Map.drop(map, [key])
@@ -177,12 +178,12 @@ after
 end
 ```
 
-## Remove parenthesis from 0-arity function & macro definitions
+## Remove or add parenthesis from 0-arity functions and macro definitions
 
-The author of the library disagrees with this style convention :) BUT, the wonderful thing about Styler is it lets you write code how _you_ want to, while normalizing it for reading for your entire team. The most important thing is not having to think about the style, and instead focus on what you're trying to achieve.
+If `zero_arity_parens` is `true` in the config, styler will add parens to 0-arity function & macro definitions. If `zero_arity_parens` is `false` in the config, styler will remove parens from 0-arity function & macro definitions. The default is `false`.
 
 ```elixir
-# Before
+# Before (zero_arity_parens: false)
 def foo()
 defp foo()
 defmacro foo()
@@ -195,22 +196,37 @@ defmacro foo
 defmacrop foo
 ```
 
+```elixir
+# Before (zero_arity_parens: true)
+def foo
+defp foo
+defmacro foo
+defmacrop foo
+
+# Styled
+def foo()
+defp foo()
+defmacro foo()
+defmacrop foo()
+```
+
 ## Elixir Deprecation Rewrites
 
 ### 1.15+
 
-| Before | After |
-|--------|-------|
-| `Logger.warn` | `Logger.warning`|
-| `Path.safe_relative_to/2` | `Path.safe_relative/2`|
-| `~R/my_regex/` | `~r/my_regex/`|
-| `Enum/String.slice/2` with decreasing ranges | add explicit steps to the range * |
-| `Date.range/2` with decreasing range | `Date.range/3` *|
-| `IO.read/bin_read` with `:all` option | replace `:all` with `:eof`|
+| Before                                       | After                              |
+| -------------------------------------------- | ---------------------------------- |
+| `Logger.warn`                                | `Logger.warning`                   |
+| `Path.safe_relative_to/2`                    | `Path.safe_relative/2`             |
+| `~R/my_regex/`                               | `~r/my_regex/`                     |
+| `Enum/String.slice/2` with decreasing ranges | add explicit steps to the range \* |
+| `Date.range/2` with decreasing range         | `Date.range/3` \*                  |
+| `IO.read/bin_read` with `:all` option        | replace `:all` with `:eof`         |
 
 \* For both of the "decreasing range" changes, the rewrite can only be applied if the range is being passed as an argument to the function.
 
 ### 1.16+
+
 File.stream! `:line` and `:bytes` deprecation
 
 ```elixir
