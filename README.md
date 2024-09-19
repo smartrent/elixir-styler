@@ -71,7 +71,7 @@ Styler can be configured in your `.formatter.exs` file
 ]
 ```
 
-Styler has one configuration options:
+Styler has several configuration options:
 
 - `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
 

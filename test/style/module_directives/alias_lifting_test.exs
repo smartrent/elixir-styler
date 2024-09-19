@@ -202,6 +202,66 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
     )
   end
 
+  test "sorts in alpha order when sort_order is :alpha" do
+    assert_style(
+      """
+      defmodule A do
+        alias A.SPOOL
+        alias A.School
+        alias A.Stool
+
+        SPOOL.foo()
+        School.foo()
+        Stool.foo()
+      end
+      """,
+      """
+      defmodule A do
+        @moduledoc false
+        alias A.School
+        alias A.SPOOL
+        alias A.Stool
+
+        SPOOL.foo()
+        School.foo()
+        Stool.foo()
+      end
+      """
+    )
+  end
+
+  test "sorts in ascii order when sort_order is :ascii" do
+    Styler.Config.set_for_test!(:sort_order, :ascii)
+
+    assert_style(
+      """
+      defmodule A do
+        alias A.SPOOL
+        alias A.School
+        alias A.Stool
+
+        SPOOL.foo()
+        School.foo()
+        Stool.foo()
+      end
+      """,
+      """
+      defmodule A do
+        @moduledoc false
+        alias A.SPOOL
+        alias A.School
+        alias A.Stool
+
+        SPOOL.foo()
+        School.foo()
+        Stool.foo()
+      end
+      """
+    )
+
+    Styler.Config.set_for_test!(:sort_order, :alpha)
+  end
+
   describe "comments stay put" do
     test "comments before alias stanza" do
       assert_style(

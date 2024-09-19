@@ -10,6 +10,9 @@
 
 defmodule Styler.Config do
   @moduledoc false
+
+  alias Credo.Check.Readability.AliasOrder
+
   @key __MODULE__
 
   @stdlib MapSet.new(~w(
@@ -27,6 +30,8 @@ defmodule Styler.Config do
   end
 
   def set!(config) do
+    credo_opts = extract_configs_from_credo()
+
     excludes =
       config[:alias_lifting_exclude]
       |> List.wrap()
@@ -43,13 +48,43 @@ defmodule Styler.Config do
       |> MapSet.union(@stdlib)
 
     :persistent_term.put(@key, %{
-      lifting_excludes: excludes
+      lifting_excludes: excludes,
+      sort_order: credo_opts[:sort_order] || :alpha
     })
+  end
+
+  def set_for_test!(key, value) do
+    current_vals = :persistent_term.get(@key, %{})
+    :persistent_term.put(@key, Map.put(current_vals, key, value))
   end
 
   def get(key) do
     @key
     |> :persistent_term.get()
     |> Map.fetch!(key)
+  end
+
+  def sort_order do
+    get(:sort_order)
+  end
+
+  defp read_credo_config do
+    exec = Credo.Execution.build()
+    dir = File.cwd!()
+    {:ok, config} = Credo.ConfigFile.read_or_default(exec, dir)
+    config
+  end
+
+  defp extract_configs_from_credo do
+    Enum.reduce(read_credo_config().checks, %{}, fn
+      {AliasOrder, opts}, acc when is_list(opts) ->
+        Map.put(acc, :sort_order, opts[:sort_method])
+
+      {MaxLineLength, opts}, acc when is_list(opts) ->
+        Map.put(acc, :line_length, opts[:max_length])
+
+      _, acc ->
+        acc
+    end)
   end
 end
