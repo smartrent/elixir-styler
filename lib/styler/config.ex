@@ -13,6 +13,7 @@ defmodule Styler.Config do
 
   alias Credo.Check.Readability.AliasOrder
   alias Credo.Check.Readability.MaxLineLength
+  alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
 
   @key __MODULE__
 
@@ -51,7 +52,8 @@ defmodule Styler.Config do
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 120,
-      sort_order: credo_opts[:sort_order] || :alpha
+      sort_order: credo_opts[:sort_order] || :alpha,
+      zero_arity_parens: credo_opts[:zero_arity_parens] || true
     })
   end
 
@@ -74,6 +76,10 @@ defmodule Styler.Config do
     get(:line_length)
   end
 
+  def zero_arity_parens? do
+    get(:zero_arity_parens)
+  end
+
   defp read_credo_config do
     exec = Credo.Execution.build()
     dir = File.cwd!()
@@ -88,6 +94,9 @@ defmodule Styler.Config do
 
       {MaxLineLength, opts}, acc when is_list(opts) ->
         Map.put(acc, :line_length, opts[:max_length])
+
+      {ParenthesesOnZeroArityDefs, opts}, acc when is_list(opts) ->
+        Map.put(acc, :zero_arity_parens, opts[:parens])
 
       _, acc ->
         acc

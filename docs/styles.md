@@ -180,9 +180,10 @@ end
 
 ## Add parenthesis to 0-arity functions and macro definitions
 
-The styler will add parens to 0-arity function & macro definitions.
+The styler will, by default, add parens to 0-arity function & macro definitions. However, if .credo.exs has `Credo.Check.Readability.ParenthesesOnZeroArityDefs, parens: false`, the styler will remove zero-arity parens. Note that this is the opposite of the default behavior of Credo, which warns on 0-arity functions and macros with parentheses if `parens: true` is not set.
 
 ```elixir
+# Default behavior
 # Before
 def foo
 defp foo
@@ -194,6 +195,21 @@ def foo()
 defp foo()
 defmacro foo()
 defmacrop foo()
+```
+
+```elixir
+# Behavior if .credo.exs has `Credo.Check.Readability.ParenthesesOnZeroArityDefs, parens: false`
+# Before
+def foo()
+defp foo()
+defmacro foo()
+defmacrop foo()
+
+# Styled
+def foo
+defp foo
+defmacro foo
+defmacrop foo
 ```
 
 ## Elixir Deprecation Rewrites
