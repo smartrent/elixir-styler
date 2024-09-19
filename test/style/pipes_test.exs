@@ -43,6 +43,8 @@ defmodule Styler.Style.PipesTest do
     end
 
     test "fixes nested pipes" do
+      Styler.Config.set_for_test!(:block_pipe_flag, true)
+
       assert_style(
         """
         a
@@ -77,10 +79,37 @@ defmodule Styler.Style.PipesTest do
         |> c()
         """
       )
+
+      Styler.Config.set_for_test!(:block_pipe_flag, false)
+
+      assert_style("""
+      a
+      |> e(fn x ->
+        with({:ok, value} <- efoo(x), do: value)
+        |> ebar()
+        |> ebaz()
+      end)
+      |> b(fn x ->
+        with({:ok, value} <- foo(x), do: value)
+        |> bar()
+        |> baz()
+      end)
+      |> c()
+      """)
     end
   end
 
   describe "block pipe starts" do
+    setup do
+      Styler.Config.set_for_test!(:block_pipe_flag, true)
+
+      on_exit(fn ->
+        Styler.Config.set_for_test!(:block_pipe_flag, false)
+      end)
+
+      :ok
+    end
+
     test "parent is a function invocation" do
       assert_style(
         "a(if x do y end |> foo(), b)",
@@ -366,6 +395,186 @@ defmodule Styler.Style.PipesTest do
     end
   end
 
+  describe "block pipe starts when credo check disabled" do
+    test "parent is a function invocation" do
+      assert_style(
+        "a(if x do y end |> foo(), b)",
+        """
+        a(
+          foo(
+            if x do
+              y
+            end
+          ),
+          b
+        )
+        """
+      )
+    end
+
+    test "handles arbitrary do-block macros" do
+      assert_style("""
+      IO.puts(
+        foo meow do
+          :foo
+        end
+      )
+      """)
+
+      assert_style("""
+      foo do
+        "foo"
+      end
+      |> IO.puts()
+      |> baz()
+      """)
+
+      assert_style("""
+      foo meow? do
+        :meow
+      else
+        :bark
+      end
+      |> IO.puts()
+      |> baz()
+      """)
+    end
+
+    test "block extraction: names aliased modules" do
+      assert_style(
+        """
+        Foo.bar do
+          :ok
+        end
+        |> case do
+          :ok -> :ok
+          _ -> :error
+        end
+        """,
+        """
+        bar_result =
+          Foo.bar do
+            :ok
+          end
+
+        case bar_result do
+          :ok -> :ok
+          _ -> :error
+        end
+        """
+      )
+    end
+
+    test "macro with arg and do block" do
+      assert_style("""
+      "baz"
+      |> foo do
+        "foo"
+      end
+      |> IO.puts()
+      """)
+    end
+
+    test "variable assignment of a block" do
+      assert_style(
+        """
+        x =
+          case y do
+            :ok -> :ok |> IO.puts()
+          end
+          |> bar()
+          |> baz()
+        """,
+        """
+        x =
+          case y do
+            :ok -> IO.puts(:ok)
+          end
+          |> bar()
+          |> baz()
+        """
+      )
+    end
+
+    test "doesn't rewrite for" do
+      assert_style("""
+      for(a <- as, do: a)
+      |> bar()
+      |> baz()
+      """)
+    end
+
+    test "doesn't rewrites unless" do
+      assert_style("""
+      unless foo do
+        bar
+      end
+      |> wee()
+      |> baz()
+      """)
+    end
+
+    test "doesn't rewrite with" do
+      assert_style("""
+      with({:ok, value} <- foo(), do: value)
+      |> bar()
+      |> baz()
+      """)
+    end
+
+    test "doesn't rewrite conds" do
+      assert_style("""
+      cond do
+        x -> :ok
+      end
+      |> bar()
+      |> baz()
+      """)
+    end
+
+    test "doesn't rewrite case" do
+      assert_style("""
+      case x do
+        x -> x
+      end
+      |> foo()
+      |> baz()
+      """)
+
+      assert_style("""
+      def foo() do
+        case x do
+          x -> x
+        end
+        |> foo()
+        |> baz()
+      end
+      """)
+    end
+
+    test "doesn't rewrite if" do
+      assert_style("""
+      def foo() do
+        if true do
+          nil
+        end
+        |> a()
+        |> b()
+      end
+      """)
+    end
+
+    test "doesn't rewrite quote" do
+      assert_style("""
+      quote do
+        foo
+      end
+      |> bar()
+      |> baz()
+      """)
+    end
+  end
+
   describe "single pipe issues" do
     test "allows unquote single pipes" do
       assert_style("foo |> unquote(bar)")
@@ -413,6 +622,8 @@ defmodule Styler.Style.PipesTest do
         """
       )
 
+      Styler.Config.set_for_test!(:block_pipe_flag, true)
+
       assert_style(
         """
         if true do
@@ -431,6 +642,8 @@ defmodule Styler.Style.PipesTest do
         foo(if_result, bar)
         """
       )
+
+      Styler.Config.set_for_test!(:block_pipe_flag, false)
     end
   end
 
@@ -600,6 +813,8 @@ defmodule Styler.Style.PipesTest do
           """
         )
 
+        Styler.Config.set_for_test!(:block_pipe_flag, true)
+
         assert_style(
           """
           if true do
@@ -621,6 +836,8 @@ defmodule Styler.Style.PipesTest do
           Enum.count(if_result, fun)
           """
         )
+
+        Styler.Config.set_for_test!(:block_pipe_flag, false)
       end
     end
 

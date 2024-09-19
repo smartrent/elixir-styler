@@ -164,7 +164,9 @@ defmodule Styler.Zipper do
   @spec remove(zipper) :: zipper
   def remove({_, nil}), do: raise(ArgumentError, message: "Cannot remove the top level node.")
   def remove({_, %{l: [left | rest]} = meta}), do: prev_down({left, %{meta | l: rest}})
-  def remove({_, %{ptree: {parent, parent_meta}, r: children}}), do: {do_replace_children(parent, children), parent_meta}
+
+  def remove({_, %{ptree: {parent, parent_meta}, r: children}}),
+    do: {do_replace_children(parent, children), parent_meta}
 
   @doc """
   Inserts the item as the left sibling of the node at this zipper, without

@@ -323,7 +323,17 @@ defmodule Styler.Style.Pipes do
   defp valid_pipe_start?({variable, _, nil}) when is_atom(variable), do: true
   # 0-arity function_call()
   defp valid_pipe_start?({fun, _, []}) when is_atom(fun), do: true
+
+  defp valid_pipe_start?({fun, _, _args}) when fun in [:case, :cond, :if, :quote, :unless, :with, :for] do
+    not Styler.Config.block_pipe_flag?()
+  end
+
   # function_call(with, args) or sigils. sigils are allowed, function w/ args is not
-  defp valid_pipe_start?({fun, _, _args}) when is_atom(fun), do: String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
+  defp valid_pipe_start?({fun, meta, _args}) when is_atom(fun) do
+    if Keyword.has_key?(meta, :do),
+      do: not Styler.Config.block_pipe_flag?(),
+      else: String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
+  end
+
   defp valid_pipe_start?(_), do: true
 end
