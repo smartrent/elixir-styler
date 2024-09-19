@@ -11,6 +11,8 @@
 defmodule Styler.Config do
   @moduledoc false
 
+  alias Credo.Check.Readability.AliasOrder
+
   @key __MODULE__
 
   @stdlib MapSet.new(~w(
@@ -28,8 +30,7 @@ defmodule Styler.Config do
   end
 
   def set!(config) do
-    credo_config = read_credo_config()
-    sort_order = get_sort_order_from_credo(credo_config) || :alpha
+    credo_opts = extract_configs_from_credo()
 
     excludes =
       config[:alias_lifting_exclude]
@@ -48,7 +49,7 @@ defmodule Styler.Config do
 
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
-      sort_order: sort_order
+      sort_order: credo_opts[:sort_order] || :alpha
     })
   end
 
@@ -68,23 +69,22 @@ defmodule Styler.Config do
   end
 
   defp read_credo_config do
-    if File.exists?(".credo.exs") do
-      {config, _} = Code.eval_file(".credo.exs")
-      config
-    else
-      %{}
-    end
+    exec = Credo.Execution.build()
+    dir = File.cwd!()
+    {:ok, config} = Credo.ConfigFile.read_or_default(exec, dir)
+    config
   end
 
-  defp get_sort_order_from_credo(credo_config) do
-    credo_checks = get_in(credo_config, [:configs, Access.at(0), :checks]) || []
+  defp extract_configs_from_credo do
+    Enum.reduce(read_credo_config().checks, %{}, fn
+      {AliasOrder, opts}, acc when is_list(opts) ->
+        Map.put(acc, :sort_order, opts[:sort_method])
 
-    Enum.find_value(credo_checks, fn
-      {Credo.Check.Readability.AliasOrder, opts} when is_list(opts) ->
-        Keyword.get(opts, :sort_method)
+      {MaxLineLength, opts}, acc when is_list(opts) ->
+        Map.put(acc, :line_length, opts[:max_length])
 
-      _ ->
-        nil
+      _, acc ->
+        acc
     end)
   end
 end
