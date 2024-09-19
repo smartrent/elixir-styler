@@ -12,6 +12,7 @@ defmodule Styler.Config do
   @moduledoc false
 
   alias Credo.Check.Readability.AliasOrder
+  alias Credo.Check.Readability.MaxLineLength
 
   @key __MODULE__
 
@@ -49,6 +50,7 @@ defmodule Styler.Config do
 
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
+      line_length: credo_opts[:line_length] || 120,
       sort_order: credo_opts[:sort_order] || :alpha
     })
   end
@@ -66,6 +68,10 @@ defmodule Styler.Config do
 
   def sort_order do
     get(:sort_order)
+  end
+
+  def line_length do
+    get(:line_length)
   end
 
   defp read_credo_config do
