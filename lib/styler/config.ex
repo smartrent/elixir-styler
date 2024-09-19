@@ -15,6 +15,7 @@ defmodule Styler.Config do
   alias Credo.Check.Readability.BlockPipe
   alias Credo.Check.Readability.MaxLineLength
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
+  alias Credo.Check.Readability.SinglePipe
 
   @key __MODULE__
 
@@ -68,6 +69,7 @@ defmodule Styler.Config do
       line_length: credo_opts[:line_length] || 120,
       reorder_configs: reorder_configs,
       sort_order: credo_opts[:sort_order] || :alpha,
+      single_pipe_flag: credo_opts[:single_pipe_flag] || false,
       zero_arity_parens: credo_opts[:zero_arity_parens] || true
     })
   end
@@ -103,8 +105,12 @@ defmodule Styler.Config do
     get(:line_length)
   end
 
-  def zero_arity_parens? do
+  def zero_arity_parens?() do
     get(:zero_arity_parens)
+  end
+
+  def single_pipe_flag?() do
+    get(:single_pipe_flag)
   end
 
   defp read_credo_config() do
@@ -127,6 +133,14 @@ defmodule Styler.Config do
 
       {ParenthesesOnZeroArityDefs, opts}, acc when is_list(opts) ->
         Map.put(acc, :zero_arity_parens, opts[:parens])
+
+      {PipeChainStart, opts}, acc when is_list(opts) ->
+        Map.put(acc, :pipe_chain_start_flag, true)
+        Map.put(acc, :pipe_chain_start_excluded_functions, opts[:excluded_functions])
+        Map.put(acc, :pipe_chain_start_excluded_argument_types, opts[:excluded_argument_types])
+
+      {SinglePipe, opts}, acc when is_list(opts) ->
+        Map.put(acc, :single_pipe_flag, true)
 
       _, acc ->
         acc
