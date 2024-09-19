@@ -12,6 +12,7 @@ defmodule Styler.Style.BlocksTest do
   use Styler.StyleCase, async: true
 
   describe "case to if" do
+    @tag :deprecated
     test "rewrites case true false to if else" do
       assert_style(
         """
@@ -106,6 +107,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "block swapping comments" do
       assert_style(
         """
@@ -172,6 +174,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "complex comments" do
       assert_style(
         """
@@ -498,6 +501,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "transforms a `with` all the way to an `if` if necessary" do
       # with a preroll
       assert_style(
@@ -553,6 +557,98 @@ defmodule Styler.Style.BlocksTest do
           :ok
         else
           :error
+        end
+        """
+      )
+
+      assert_style(
+        """
+        with true <- foo do
+          boop
+          bar
+        end
+        """,
+        """
+        if foo do
+          boop
+          bar
+        end
+        """
+      )
+
+      assert_style "with true <- x, do: bar", "if x, do: bar"
+
+      assert_style(
+        """
+        with true <- foo || {:error, :shouldve_used_an_if_statement} do
+          bar
+        end
+        """,
+        """
+        if foo do
+          bar
+        else
+          {:error, :shouldve_used_an_if_statement}
+        end
+        """
+      )
+    end
+
+    test "transforms a `with` to `case` if necessary" do
+      # with a preroll
+      assert_style(
+        """
+        with foo <- bar,
+          true <- bop do
+          :ok
+        else
+          _ -> :error
+        end
+        """,
+        """
+        foo = bar
+
+        case bop do
+          true -> :ok
+          _ -> :error
+        end
+        """
+      )
+
+      # no pre or postroll
+      assert_style(
+        """
+        with true <- bop do
+          :ok
+        else
+          _ -> :error
+        end
+        """,
+        """
+        case bop do
+          true -> :ok
+          _ -> :error
+        end
+        """
+      )
+
+      # with postroll
+      assert_style(
+        """
+        with true <- bop, foo <- bar do
+          :ok
+        else
+          _ -> :error
+        end
+        """,
+        """
+        case bop do
+          true ->
+            foo = bar
+            :ok
+
+          _ ->
+            :error
         end
         """
       )
