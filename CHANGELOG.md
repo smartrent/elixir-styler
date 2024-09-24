@@ -2,16 +2,27 @@
 
 **Note** Styler's only public API is its usage as a formatter plugin. While you're welcome to play with its internals,
 they can and will change without that change being reflected in Styler's semantic version.
-
 ## main
+
+## 1.1.1
 
 ### Improvements
 
+* `unless`: rewrite `unless a |> b |> c` as `unless !(a |> b() |> c())` rather than `unless a |> b() |> c() |> Kernel.!()` (h/t @gregmefford)
+
+## 1.1.0
+
+### Improvements
+
+The big change here is the rewrite/removal of `unless` due to [unless "eventually" being deprecated](https://github.com/elixir-lang/elixir/pull/13769#issuecomment-2334878315). Thanks to @janpieper and @ypconstante for bringing this up in #190.
+
+* `unless`: rewrite all `unless` to `if` (#190)
 * `pipes`: optimize `|> Stream.{each|map}(fun) |> Stream.run()` to `|> Enum.each(fun)`
 
 ### Fixes
 
 * `pipes`: optimizations reducing 2 pipes to 1 no longer squeeze all pipes onto one line (#180)
+* `if`: fix infinite loop rewriting negated if with empty do body `if x != y, do: (), else: :ok` (#196, h/t @itamm15)
 
 ## 1.0.0
 
