@@ -16,6 +16,8 @@ defmodule Styler.Config do
   alias Credo.Check.Readability.MaxLineLength
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
   alias Credo.Check.Readability.SinglePipe
+  alias Credo.Check.Refactor.PipeChainStart
+  alias Styler.Style.Configs
 
   @key __MODULE__
 
@@ -26,7 +28,7 @@ defmodule Styler.Config do
     Styler.Style.Defs,
     Styler.Style.Blocks,
     Styler.Style.Deprecations,
-    Styler.Style.Configs
+    Configs
   ]
 
   @stdlib MapSet.new(~w(
@@ -67,6 +69,9 @@ defmodule Styler.Config do
       block_pipe_flag: credo_opts[:block_pipe_flag] || false,
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 120,
+      pipe_chain_start_flag: credo_opts[:pipe_chain_start_flag] || false,
+      pipe_chain_start_excluded_functions: credo_opts[:pipe_chain_start_excluded_functions] || [],
+      pipe_chain_start_excluded_argument_types: credo_opts[:pipe_chain_start_excluded_argument_types] || [],
       reorder_configs: reorder_configs,
       sort_order: credo_opts[:sort_order] || :alpha,
       single_pipe_flag: credo_opts[:single_pipe_flag] || false,
@@ -85,11 +90,11 @@ defmodule Styler.Config do
     |> Map.fetch!(key)
   end
 
-  def get_styles do
+  def get_styles() do
     if get(:reorder_configs) == true do
       @styles
     else
-      @styles -- [Styler.Style.Configs]
+      @styles -- [Configs]
     end
   end
 
@@ -105,12 +110,28 @@ defmodule Styler.Config do
     get(:line_length)
   end
 
-  def zero_arity_parens?() do
-    get(:zero_arity_parens)
+  def pipe_chain_start_excluded_functions() do
+    get(:pipe_chain_start_excluded_functions)
+  end
+
+  def pipe_chain_start_excluded_argument_types() do
+    get(:pipe_chain_start_excluded_argument_types)
+  end
+
+  def refactor_pipe_chain_starts?() do
+    get(:pipe_chain_start_flag)
+  end
+
+  def sort_order() do
+    get(:sort_order)
   end
 
   def single_pipe_flag?() do
     get(:single_pipe_flag)
+  end
+
+  def zero_arity_parens?() do
+    get(:zero_arity_parens)
   end
 
   defp read_credo_config() do
@@ -135,9 +156,10 @@ defmodule Styler.Config do
         Map.put(acc, :zero_arity_parens, opts[:parens])
 
       {PipeChainStart, opts}, acc when is_list(opts) ->
-        Map.put(acc, :pipe_chain_start_flag, true)
-        Map.put(acc, :pipe_chain_start_excluded_functions, opts[:excluded_functions])
-        Map.put(acc, :pipe_chain_start_excluded_argument_types, opts[:excluded_argument_types])
+        acc
+        |> Map.put(:pipe_chain_start_flag, true)
+        |> Map.put(:pipe_chain_start_excluded_functions, opts[:excluded_functions])
+        |> Map.put(:pipe_chain_start_excluded_argument_types, opts[:excluded_argument_types])
 
       {SinglePipe, opts}, acc when is_list(opts) ->
         Map.put(acc, :single_pipe_flag, true)

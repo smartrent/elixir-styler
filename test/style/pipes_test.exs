@@ -13,9 +13,11 @@ defmodule Styler.Style.PipesTest do
 
   setup do
     Styler.Config.set_for_test!(:single_pipe_flag, true)
+    Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
 
     on_exit(fn ->
       Styler.Config.set_for_test!(:single_pipe_flag, false)
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
     end)
 
     :ok
@@ -1065,6 +1067,138 @@ defmodule Styler.Style.PipesTest do
 
                    excluded_first = MapSet.union(aliased, @excluded_namespaces)
                    """
+    end
+  end
+
+  describe "n-arity functions" do
+    test "doesn't extract >0 arity functions when disabled" do
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
+
+      assert_style("""
+      M.f(a, b)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(a, b)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
+    end
+
+    test "doesn't extract >0 arity functions when excluded_argument_types" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [
+        :atom,
+        :binary,
+        :bitstring,
+        :boolean,
+        :const,
+        # TODO
+        # :fn,
+        # TODO
+        # :keyword,
+        :list,
+        :map,
+        :number,
+        :regex,
+        :tuple
+      ])
+
+      assert_style("""
+      Regex.run(~r/foo/, "foobar")
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(:my_atom)
+      |> g()
+      |> h()
+      """)
+
+      assert_style(
+        """
+        f(x)
+        |> g()
+        |> h()
+        """,
+        """
+        x
+        |> f()
+        |> g()
+        |> h()
+        """
+      )
+
+      assert_style("""
+      f("my string", b, c)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      defmodule Test do
+        @apple :myconst
+
+        def p() do
+          f(@apple)
+          |> g()
+          |> h()
+        end
+      end
+      """)
+
+      assert_style("""
+      f(<<1>>)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(<<1::integer-size(8), 2::integer-size(8), 3::integer-size(8)>>)
+      |> g()
+      |> h()
+      """)
+
+      # assert_style("""
+      # MathOperations.apply_operation(&MathOperations.add/2, 5, 3)
+      # |> MathOperations.apply_operation(&MathOperations.multiply/2, 2)
+      # """)
+
+      # assert_style("""
+      # f(a: 1, b: 3)
+      # |> g()
+      # |> h()
+      # """)
+
+      assert_style("""
+      f([1, 2, 3])
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(%{a: 1, b: 2})
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(1)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f({1, 2, 3})
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
   end
 end

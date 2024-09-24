@@ -322,7 +322,9 @@ defmodule Styler.Style.Pipes do
   # 'char#{list} interpolation'
   defp valid_pipe_start?({{:., _, [List, :to_charlist]}, _, _}), do: true
   # n-arity Module.function_call(...args)
-  defp valid_pipe_start?({{:., _, _}, _, _}), do: false
+  defp valid_pipe_start?({{:., _, _}, _, arguments}), do:
+    not Styler.Config.refactor_pipe_chain_starts?() or first_arg_excluded_type?(arguments)
+
   # variable
   defp valid_pipe_start?({variable, _, nil}) when is_atom(variable), do: true
   # 0-arity function_call()
@@ -333,11 +335,50 @@ defmodule Styler.Style.Pipes do
   end
 
   # function_call(with, args) or sigils. sigils are allowed, function w/ args is not
-  defp valid_pipe_start?({fun, meta, _args}) when is_atom(fun) do
-    if Keyword.has_key?(meta, :do),
-      do: not Styler.Config.block_pipe_flag?(),
-      else: String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
+  defp valid_pipe_start?({fun, meta, args}) when is_atom(fun) do
+    not Styler.Config.refactor_pipe_chain_starts?() or (custom_macro?(meta) and not Styler.Config.block_pipe_flag?()) or
+      first_arg_excluded_type?(args) or String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
   end
 
   defp valid_pipe_start?(_), do: true
+
+  defp custom_macro?(meta), do: Keyword.has_key?(meta, :do)
+
+  defp first_arg_excluded_type?([{:@, _, _} | _]),
+    do: :const in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{:%{}, _, _} | _]),
+    do: :map in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{:{}, _, _} | _]),
+    do: :tuple in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{:sigil_r, _, _} | _]),
+    do: :regex in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{:sigil_R, _, _} | _]),
+    do: :regex in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{:<<>>, _, _} | _]),
+    do: :bitstring in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  defp first_arg_excluded_type?([{_, _, [arg1 | _]} | _]),
+    do: get_type(arg1) in Styler.Config.pipe_chain_start_excluded_argument_types()
+
+  # Bare variables are not excluded
+  defp first_arg_excluded_type?(_), do: false
+
+  defp get_type(variable) do
+    cond do
+      is_atom(variable) -> :atom
+      is_binary(variable) -> :binary
+      is_boolean(variable) -> :boolean
+      # is_function(variable) -> :fn
+      # is_keyword(variable) -> :keyword
+      is_list(variable) -> :list
+      is_map(variable) -> :map
+      is_number(variable) -> :number
+      true -> :unknown
+    end
+  end
 end
