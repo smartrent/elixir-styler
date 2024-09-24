@@ -18,16 +18,6 @@ defmodule Styler do
   alias Styler.StyleError
   alias Styler.Zipper
 
-  @styles [
-    Styler.Style.ModuleDirectives,
-    Styler.Style.Pipes,
-    Styler.Style.SingleNode,
-    Styler.Style.Defs,
-    Styler.Style.Blocks,
-    Styler.Style.Deprecations,
-    Styler.Style.Configs
-  ]
-
   @doc false
   def style({ast, comments}, file, opts) do
     on_error = opts[:on_error] || :log
@@ -35,7 +25,7 @@ defmodule Styler do
     zipper = Zipper.zip(ast)
 
     {{ast, _}, comments} =
-      Enum.reduce(@styles, {zipper, comments}, fn style, {zipper, comments} ->
+      Enum.reduce(Styler.Config.get_styles(), {zipper, comments}, fn style, {zipper, comments} ->
         context = %{comments: comments, file: file}
 
         try do

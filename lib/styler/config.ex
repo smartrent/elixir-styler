@@ -17,6 +17,16 @@ defmodule Styler.Config do
 
   @key __MODULE__
 
+  @styles [
+    Styler.Style.ModuleDirectives,
+    Styler.Style.Pipes,
+    Styler.Style.SingleNode,
+    Styler.Style.Defs,
+    Styler.Style.Blocks,
+    Styler.Style.Deprecations,
+    Styler.Style.Configs
+  ]
+
   @stdlib MapSet.new(~w(
     Access Agent Application Atom Base Behaviour Bitwise Code Date DateTime Dict Ecto Enum Exception
     File Float GenEvent GenServer HashDict HashSet Integer IO Kernel Keyword List
@@ -49,9 +59,12 @@ defmodule Styler.Config do
       end)
       |> MapSet.union(@stdlib)
 
+    reorder_configs = if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
+
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 120,
+      reorder_configs: reorder_configs,
       sort_order: credo_opts[:sort_order] || :alpha,
       zero_arity_parens: credo_opts[:zero_arity_parens] || true
     })
@@ -66,6 +79,14 @@ defmodule Styler.Config do
     @key
     |> :persistent_term.get()
     |> Map.fetch!(key)
+  end
+
+  def get_styles do
+    if get(:reorder_configs) == true do
+      @styles
+    else
+      @styles -- [Styler.Style.Configs]
+    end
   end
 
   def sort_order do
