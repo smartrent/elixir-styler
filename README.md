@@ -66,14 +66,16 @@ Styler can be configured in your `.formatter.exs` file
 [
   plugins: [Styler],
   styler: [
-    alias_lifting_exclude: [...]
+    alias_lifting_exclude: [...],
+    reorder_configs: true | false
   ]
 ]
 ```
 
 Styler has several configuration options:
 
-- `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more.
+- `:alias_lifting_exclude`, which accepts a list of atoms to _not_ lift. See the [Module Directive documentation](docs/module_directives.md#alias-lifting) for more
+- `:reorder_configs`, which controls whether or not the configs in your `config/*.exs` files are alphabetized. This is true by default.
 
 ## WARNING: Styler can change the behaviour of your program!
 
