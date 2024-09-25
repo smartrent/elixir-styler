@@ -50,7 +50,8 @@ defmodule Styler.Style.ModuleDirectives do
   @attr_directives ~w(moduledoc shortdoc behaviour)a
   @defstruct ~w(schema embedded_schema defstruct)a
 
-  @moduledoc_false {:@, [line: nil], [{:moduledoc, [line: nil], [{:__block__, [line: nil], [false]}]}]}
+  @module_placeholder "Xk9pLm3Qw7_RAND_PLACEHOLDER"
+  @moduledoc_false {:@, [line: nil], [{:moduledoc, [line: nil], [{:__block__, [line: nil], [@module_placeholder]}]}]}
 
   def run({{:defmodule, _, children}, _} = zipper, ctx) do
     [name, [{{:__block__, do_meta, [:do]}, _body}]] = children
@@ -131,6 +132,8 @@ defmodule Styler.Style.ModuleDirectives do
   end
 
   def run(zipper, ctx), do: {:cont, zipper, ctx}
+
+  def moduledoc_placeholder(), do: @module_placeholder
 
   defp moduledoc({:__aliases__, m, aliases}) do
     name = aliases |> List.last() |> to_string()

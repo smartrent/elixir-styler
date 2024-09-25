@@ -1,19 +1,3 @@
-## Adds Moduledoc
-
-Adds `@moduledoc false` to modules without a moduledoc unless the module's name ends with one of the following:
-
-* `Test`
-* `Mixfile`
-* `MixProject`
-* `Controller`
-* `Endpoint`
-* `Repo`
-* `Router`
-* `Socket`
-* `View`
-* `HTML`
-* `JSON`
-
 ## Directive Expansion
 
 Expands `Module.{SubmoduleA, SubmoduleB}` to their explicit forms for ease of searching.
@@ -38,7 +22,7 @@ alias Foo.Bop
 Modules directives are sorted into the following order:
 
 * `@shortdoc`
-* `@moduledoc` (adds `@moduledoc false`)
+* `@moduledoc`
 * `@behaviour`
 * `use`
 * `import` (sorted alphabetically)
