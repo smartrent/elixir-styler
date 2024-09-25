@@ -14,6 +14,7 @@ defmodule Styler.Config do
   alias Credo.Check.Readability.AliasOrder
   alias Credo.Check.Readability.MaxLineLength
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
+  alias Styler.Style.Configs
 
   @key __MODULE__
 
@@ -24,7 +25,7 @@ defmodule Styler.Config do
     Styler.Style.Defs,
     Styler.Style.Blocks,
     Styler.Style.Deprecations,
-    Styler.Style.Configs
+    Configs
   ]
 
   @stdlib MapSet.new(~w(
@@ -81,34 +82,34 @@ defmodule Styler.Config do
     |> Map.fetch!(key)
   end
 
-  def get_styles do
+  def get_styles() do
     if get(:reorder_configs) == true do
       @styles
     else
-      @styles -- [Styler.Style.Configs]
+      @styles -- [Configs]
     end
   end
 
-  def sort_order do
+  def sort_order() do
     get(:sort_order)
   end
 
-  def line_length do
+  def line_length() do
     get(:line_length)
   end
 
-  def zero_arity_parens? do
+  def zero_arity_parens?() do
     get(:zero_arity_parens)
   end
 
-  defp read_credo_config do
+  defp read_credo_config() do
     exec = Credo.Execution.build()
     dir = File.cwd!()
     {:ok, config} = Credo.ConfigFile.read_or_default(exec, dir)
     config
   end
 
-  defp extract_configs_from_credo do
+  defp extract_configs_from_credo() do
     Enum.reduce(read_credo_config().checks, %{}, fn
       {AliasOrder, opts}, acc when is_list(opts) ->
         Map.put(acc, :sort_order, opts[:sort_method])

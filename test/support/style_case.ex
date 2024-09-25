@@ -126,7 +126,11 @@ defmodule Styler.StyleCase do
         assert true
       else
         flunk(
-          format_diff(styled, restyled, "expected styling to be idempotent, but a second pass resulted in more changes.")
+          format_diff(
+            styled,
+            restyled,
+            "expected styling to be idempotent, but a second pass resulted in more changes."
+          )
         )
       end
     end

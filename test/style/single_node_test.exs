@@ -30,7 +30,10 @@ defmodule Styler.Style.SingleNodeTest do
   describe "{Keyword/Map}.merge/2 of a single key => *.put/3" do
     test "in a pipe" do
       for module <- ~w(Map Keyword) do
-        assert_style("foo |> #{module}.merge(%{one_key: :bar}) |> bop()", "foo |> #{module}.put(:one_key, :bar) |> bop()")
+        assert_style(
+          "foo |> #{module}.merge(%{one_key: :bar}) |> bop()",
+          "foo |> #{module}.put(:one_key, :bar) |> bop()"
+        )
       end
     end
 
