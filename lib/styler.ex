@@ -45,6 +45,16 @@ defmodule Styler do
         end
       end)
 
+      zipper = Zipper.zip(ast)
+      moduledoc_placeholder = Styler.Style.ModuleDirectives.moduledoc_placeholder()
+
+    {{ast, _}, _} =
+      Zipper.traverse_while(zipper, nil, fn
+        {{:@, _, [{:moduledoc, _, [{:__block__, _, [^moduledoc_placeholder]}]}]}, _} = z, _ ->
+          {:cont, Zipper.remove(z), nil}
+        z, _ ->
+          {:cont, z, nil}
+      end)
     {ast, comments}
   end
 

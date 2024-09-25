@@ -49,53 +49,6 @@ defmodule Styler.Style.ModuleDirectivesTest do
     test "adds moduledoc" do
       assert_style(
         """
-        defmodule A do
-        end
-        """,
-        """
-        defmodule A do
-          @moduledoc false
-        end
-        """
-      )
-
-      assert_style(
-        """
-        defmodule B do
-          defmodule C do
-          end
-        end
-        """,
-        """
-        defmodule B do
-          @moduledoc false
-          defmodule C do
-            @moduledoc false
-          end
-        end
-        """
-      )
-
-      assert_style(
-        """
-        defmodule Bar do
-          alias Bop.Bop
-
-          :ok
-        end
-        """,
-        """
-        defmodule Bar do
-          @moduledoc false
-          alias Bop.Bop
-
-          :ok
-        end
-        """
-      )
-
-      assert_style(
-        """
         defmodule DocsOnly do
           @moduledoc "woohoo"
         end
@@ -110,12 +63,6 @@ defmodule Styler.Style.ModuleDirectivesTest do
       assert_style(
         """
         defmodule Foo do
-          use Bar
-        end
-        """,
-        """
-        defmodule Foo do
-          @moduledoc false
           use Bar
         end
         """
@@ -129,7 +76,6 @@ defmodule Styler.Style.ModuleDirectivesTest do
         """,
         """
         defmodule Foo do
-          @moduledoc false
           alias Foo.Bar
           alias Foo.Baz
         end
@@ -147,9 +93,7 @@ defmodule Styler.Style.ModuleDirectivesTest do
         """,
         """
         defmodule A do
-          @moduledoc false
           defmodule B do
-            @moduledoc false
             :literal
           end
         end
@@ -516,6 +460,7 @@ defmodule Styler.Style.ModuleDirectivesTest do
     assert_style(
       """
       defmodule F do
+        @moduledoc "This is a test"
         defstruct [:a]
         # comment for foo
         def foo, do: :ok
@@ -525,7 +470,7 @@ defmodule Styler.Style.ModuleDirectivesTest do
       """,
       """
       defmodule F do
-        @moduledoc false
+        @moduledoc "This is a test"
         @derive Inspect
         @derive {Foo, bar: :baz}
         defstruct [:a]
