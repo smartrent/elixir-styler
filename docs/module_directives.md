@@ -1,3 +1,13 @@
+## Skipping Module Reordering
+
+If you want to skip module reordering, you can add the following comment to the top of the file:
+
+```elixir
+# elixir-styler:skip-module-reordering
+```
+
+This will prevent Styler from doing any of the below transformations.
+
 ## Directive Expansion
 
 Expands `Module.{SubmoduleA, SubmoduleB}` to their explicit forms for ease of searching.
