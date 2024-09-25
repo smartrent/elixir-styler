@@ -15,7 +15,7 @@ defmodule Styler.MixProject do
   @version "1.1.1"
   @url "https://github.com/adobe/elixir-styler"
 
-  def project do
+  def project() do
     [
       app: :styler,
       version: @version,
@@ -37,16 +37,16 @@ defmodule Styler.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  def application, do: [extra_applications: [:logger]]
+  def application(), do: [extra_applications: [:logger]]
 
-  defp deps do
+  defp deps() do
     [
       {:ex_doc, "~> 0.31", runtime: false, only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
-  defp package do
+  defp package() do
     [
       maintainers: ["Matt Enlow", "Greg Mefford"],
       licenses: ["Apache-2.0"],
@@ -54,7 +54,7 @@ defmodule Styler.MixProject do
     ]
   end
 
-  defp docs do
+  defp docs() do
     [
       main: "readme",
       source_ref: "v#{@version}",

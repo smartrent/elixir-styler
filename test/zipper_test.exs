@@ -478,13 +478,14 @@ defmodule StylerTest.ZipperTest do
 
   describe "insert_child/2 and append_child/2" do
     test "add child nodes to the leftmost or rightmost side" do
-      assert [1, 2, 3] |> Zipper.zip() |> Zipper.insert_child(:first) |> Zipper.append_child(:last) |> Zipper.root() == [
-               :first,
-               1,
-               2,
-               3,
-               :last
-             ]
+      assert [1, 2, 3] |> Zipper.zip() |> Zipper.insert_child(:first) |> Zipper.append_child(:last) |> Zipper.root() ==
+               [
+                 :first,
+                 1,
+                 2,
+                 3,
+                 :last
+               ]
 
       assert {:left, :right} |> Zipper.zip() |> Zipper.insert_child(:first) |> Zipper.root() ==
                {:{}, [],
@@ -502,7 +503,11 @@ defmodule StylerTest.ZipperTest do
                   :last
                 ]}
 
-      assert {:foo, [], []} |> Zipper.zip() |> Zipper.insert_child(:first) |> Zipper.append_child(:last) |> Zipper.root() ==
+      assert {:foo, [], []}
+             |> Zipper.zip()
+             |> Zipper.insert_child(:first)
+             |> Zipper.append_child(:last)
+             |> Zipper.root() ==
                {:foo, [], [:first, :last]}
 
       assert {{:., [], [:a, :b]}, [], []}
