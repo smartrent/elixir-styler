@@ -98,10 +98,6 @@ defmodule Styler.Config do
     end
   end
 
-  def sort_order do
-    get(:sort_order)
-  end
-
   def block_pipe_flag?() do
     get(:block_pipe_flag)
   end

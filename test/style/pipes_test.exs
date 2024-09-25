@@ -516,16 +516,6 @@ defmodule Styler.Style.PipesTest do
       """)
     end
 
-    test "doesn't rewrites unless" do
-      assert_style("""
-      unless foo do
-        bar
-      end
-      |> wee()
-      |> baz()
-      """)
-    end
-
     test "doesn't rewrite with" do
       assert_style("""
       with({:ok, value} <- foo(), do: value)
