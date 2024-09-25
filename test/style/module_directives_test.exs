@@ -12,6 +12,53 @@ defmodule Styler.Style.ModuleDirectivesTest do
   @moduledoc false
   use Styler.StyleCase, async: true
 
+  describe "skip comment" do
+    test "skips module reordering" do
+      assert_style("""
+      defmodule Foo do
+        # elixir-styler:skip-module-reordering
+        @behaviour Lawful
+        require A
+        alias A.{A, B}
+
+        use B
+
+        def c(x), do: y
+
+        import C
+        @behaviour Chaotic
+        @doc "d doc"
+        def d() do
+          alias X.X
+          alias H.H
+
+          alias Z.Z
+          import Ecto.Query
+          X.foo()
+        end
+
+        @shortdoc "it's pretty short"
+        import A
+        alias C.C
+        alias D.D
+
+        require C
+        require B
+
+        use A
+
+        alias C.C
+        alias A.A
+
+        @moduledoc "README.md"
+                   |> File.read!()
+                   |> String.split("<!-- MDOC !-->")
+                   |> Enum.fetch!(1)
+      end
+      """)
+    end
+  end
+
   describe "defmodule features" do
     test "handles module with no directives" do
       assert_style("""

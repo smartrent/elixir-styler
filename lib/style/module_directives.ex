@@ -54,43 +54,47 @@ defmodule Styler.Style.ModuleDirectives do
   @moduledoc_false {:@, [line: nil], [{:moduledoc, [line: nil], [{:__block__, [line: nil], [@module_placeholder]}]}]}
 
   def run({{:defmodule, _, children}, _} = zipper, ctx) do
-    [name, [{{:__block__, do_meta, [:do]}, _body}]] = children
-
-    if do_meta[:format] == :keyword do
+    if has_skip_comment?(ctx) do
       {:skip, zipper, ctx}
     else
-      moduledoc = moduledoc(name)
-      # Move the zipper's focus to the module's body
-      body_zipper = zipper |> Zipper.down() |> Zipper.right() |> Zipper.down() |> Zipper.down() |> Zipper.right()
+      [name, [{{:__block__, do_meta, [:do]}, _body}]] = children
 
-      case Zipper.node(body_zipper) do
-        # an empty body - replace it with a moduledoc and call it a day ¯\_(ツ)_/¯
-        {:__block__, _, []} ->
-          zipper = if moduledoc, do: Zipper.replace(body_zipper, moduledoc), else: body_zipper
-          {:skip, zipper, ctx}
+      if do_meta[:format] == :keyword do
+        {:skip, zipper, ctx}
+      else
+        moduledoc = moduledoc(name)
+        # Move the zipper's focus to the module's body
+        body_zipper = zipper |> Zipper.down() |> Zipper.right() |> Zipper.down() |> Zipper.down() |> Zipper.right()
 
-        # we want only-child literal block to be handled in the only-child catch-all. it means someone did a weird
-        # (that would be a literal, so best case someone wrote a string and forgot to put `@moduledoc` before it)
-        {:__block__, _, [_, _ | _]} ->
-          {:skip, organize_directives(body_zipper, moduledoc), ctx}
-
-        # a module whose only child is a moduledoc. nothing to do here!
-        # seems weird at first blush but lots of projects/libraries do this with their root namespace module
-        {:@, _, [{:moduledoc, _, _}]} ->
-          {:skip, zipper, ctx}
-
-        # There's only one child, and it's not a moduledoc. Conditionally add a moduledoc, then style the only_child
-        only_child ->
-          if moduledoc do
-            zipper =
-              body_zipper
-              |> Zipper.replace({:__block__, [], [moduledoc, only_child]})
-              |> organize_directives()
-
+        case Zipper.node(body_zipper) do
+          # an empty body - replace it with a moduledoc and call it a day ¯\_(ツ)_/¯
+          {:__block__, _, []} ->
+            zipper = if moduledoc, do: Zipper.replace(body_zipper, moduledoc), else: body_zipper
             {:skip, zipper, ctx}
-          else
-            run(body_zipper, ctx)
-          end
+
+          # we want only-child literal block to be handled in the only-child catch-all. it means someone did a weird
+          # (that would be a literal, so best case someone wrote a string and forgot to put `@moduledoc` before it)
+          {:__block__, _, [_, _ | _]} ->
+            {:skip, organize_directives(body_zipper, moduledoc), ctx}
+
+          # a module whose only child is a moduledoc. nothing to do here!
+          # seems weird at first blush but lots of projects/libraries do this with their root namespace module
+          {:@, _, [{:moduledoc, _, _}]} ->
+            {:skip, zipper, ctx}
+
+          # There's only one child, and it's not a moduledoc. Conditionally add a moduledoc, then style the only_child
+          only_child ->
+            if moduledoc do
+              zipper =
+                body_zipper
+                |> Zipper.replace({:__block__, [], [moduledoc, only_child]})
+                |> organize_directives()
+
+              {:skip, zipper, ctx}
+            else
+              run(body_zipper, ctx)
+            end
+        end
       end
     end
   end
@@ -427,5 +431,9 @@ defmodule Styler.Style.ModuleDirectives do
     |> List.keysort(1)
     |> Enum.map(&elem(&1, 0))
     |> Style.reset_newlines()
+  end
+
+  defp has_skip_comment?(context) do
+    Enum.any?(context.comments, &String.contains?(&1.text, "elixir-styler:skip-module-reordering"))
   end
 end
