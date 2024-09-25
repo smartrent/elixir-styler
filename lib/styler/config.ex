@@ -63,7 +63,7 @@ defmodule Styler.Config do
 
     :persistent_term.put(@key, %{
       lifting_excludes: excludes,
-      line_length: credo_opts[:line_length] || 120,
+      line_length: credo_opts[:line_length] || 98,
       reorder_configs: reorder_configs,
       sort_order: credo_opts[:sort_order] || :alpha,
       zero_arity_parens: credo_opts[:zero_arity_parens] || true
