@@ -12,6 +12,7 @@ defmodule Styler.Style.BlocksTest do
   use Styler.StyleCase, async: true
 
   describe "case to if" do
+    @tag :deprecated
     test "rewrites case true false to if else" do
       assert_style(
         """
@@ -106,6 +107,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "block swapping comments" do
       assert_style(
         """
@@ -172,6 +174,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "complex comments" do
       assert_style(
         """
@@ -498,6 +501,7 @@ defmodule Styler.Style.BlocksTest do
       )
     end
 
+    @tag :deprecated
     test "transforms a `with` all the way to an `if` if necessary" do
       # with a preroll
       assert_style(
@@ -1020,7 +1024,10 @@ defmodule Styler.Style.BlocksTest do
       end
 
       for negator <- ["!=", "!=="], inverse = String.replace(negator, "!", "=") do
-        assert_style("if a #{negator} b, do: :bar, else: :baz", "if a #{inverse} b, do: :baz, else: :bar")
+        assert_style(
+          "if a #{negator} b, do: :bar, else: :baz",
+          "if a #{inverse} b, do: :baz, else: :bar"
+        )
 
         assert_style(
           """

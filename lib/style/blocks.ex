@@ -19,7 +19,7 @@ defmodule Styler.Style.Blocks do
   * Credo.Check.Readability.ParenthesesOnZeroArityDefs
   * Credo.Check.Readability.PreferImplicitTry
   * Credo.Check.Readability.WithSingleClause
-  * Credo.Check.Refactor.CaseTrivialMatches
+  * [DEPRECATED] Credo.Check.Refactor.CaseTrivialMatches
   * Credo.Check.Refactor.CondStatements
   * Credo.Check.Refactor.RedundantWithClauseResult
   * Credo.Check.Refactor.WithClauses
@@ -32,19 +32,27 @@ defmodule Styler.Style.Blocks do
 
   defguardp is_negator(n) when elem(n, 0) in [:!, :not, :!=, :!==]
 
+  # This corrects Credo.Check.Refactor.CaseTrivialMatches, which is deprecated since it might do more harm than good.
   # case statement with exactly 2 `->` cases
   # rewrite to `if` if it's any of 3 trivial cases
-  def run({{:case, _, [head, [{_, [{:->, _, [[lhs_a], a]}, {:->, _, [[lhs_b], b]}]}]]}, _} = zipper, ctx) do
-    case {lhs_a, lhs_b} do
-      {{_, _, [true]}, {_, _, [false]}} -> if_ast(zipper, head, a, b, ctx)
-      {{_, _, [true]}, {:_, _, _}} -> if_ast(zipper, head, a, b, ctx)
-      {{_, _, [false]}, {_, _, [true]}} -> if_ast(zipper, head, b, a, ctx)
-      _ -> {:cont, zipper, ctx}
-    end
-  end
+  # def run(
+  #       {{:case, _, [head, [{_, [{:->, _, [[lhs_a], a]}, {:->, _, [[lhs_b], b]}]}]]}, _} = zipper,
+  #       ctx
+  #     ) do
+  #   case {lhs_a, lhs_b} do
+  #     {{_, _, [true]}, {_, _, [false]}} -> if_ast(zipper, head, a, b, ctx)
+  #     {{_, _, [true]}, {:_, _, _}} -> if_ast(zipper, head, a, b, ctx)
+  #     {{_, _, [false]}, {_, _, [true]}} -> if_ast(zipper, head, b, a, ctx)
+  #     _ -> {:cont, zipper, ctx}
+  #   end
+  # end
 
   # Credo.Check.Refactor.CondStatements
-  def run({{:cond, _, [[{_, [{:->, _, [[head], a]}, {:->, _, [[{:__block__, _, [truthy]}], b]}]}]]}, _} = zipper, ctx)
+  def run(
+        {{:cond, _, [[{_, [{:->, _, [[head], a]}, {:->, _, [[{:__block__, _, [truthy]}], b]}]}]]},
+         _} = zipper,
+        ctx
+      )
       when is_atom(truthy) and truthy not in [nil, false],
       do: if_ast(zipper, head, a, b, ctx)
 
@@ -66,7 +74,13 @@ defmodule Styler.Style.Blocks do
         # `true <- foo || {:error, :shouldve_used_an_if_statement}``
         # turn the rhs of an `||` into an else body
         {:||, _, [head, else_body]} ->
-          [head, [do_kwl, {{:__block__, [line: m[:line] + 2], [:else]}, Style.shift_line(else_body, 3)}]]
+          [
+            head,
+            [
+              do_kwl,
+              {{:__block__, [line: m[:line] + 2], [:else]}, Style.shift_line(else_body, 3)}
+            ]
+          ]
 
         _ ->
           [rhs, [do_kwl]]
@@ -98,15 +112,20 @@ defmodule Styler.Style.Blocks do
       if Enum.empty?(children) do
         {:cont, replace_with_statement(zipper, preroll), ctx}
       else
-        [[{{_, do_meta, _} = do_block, do_body} | elses] | reversed_clauses] = Enum.reverse(children)
+        [[{{_, do_meta, _} = do_block, do_body} | elses] | reversed_clauses] =
+          Enum.reverse(children)
+
         {postroll, reversed_clauses} = Enum.split_while(reversed_clauses, &(not left_arrow?(&1)))
         [{:<-, final_clause_meta, [lhs, rhs]} = _final_clause | rest] = reversed_clauses
 
         # drop singleton identity else clauses like `else foo -> foo end`
         elses =
           case elses do
-            [{{_, _, [:else]}, [{:->, _, [[left], right]}]}] -> if nodes_equivalent?(left, right), do: [], else: elses
-            _ -> elses
+            [{{_, _, [:else]}, [{:->, _, [[left], right]}]}] ->
+              if nodes_equivalent?(left, right), do: [], else: elses
+
+            _ ->
+              elses
           end
 
         {reversed_clauses, do_body} =
@@ -115,7 +134,11 @@ defmodule Styler.Style.Blocks do
             Enum.any?(postroll) ->
               {node, do_body_meta, do_children} = do_body
               do_children = if node == :__block__, do: do_children, else: [do_body]
-              do_body = {:__block__, Keyword.take(do_body_meta, [:line]), Enum.reverse(postroll, do_children)}
+
+              do_body =
+                {:__block__, Keyword.take(do_body_meta, [:line]),
+                 Enum.reverse(postroll, do_children)}
+
               {reversed_clauses, do_body}
 
             # Credo.Check.Refactor.RedundantWithClauseResult
@@ -141,7 +164,11 @@ defmodule Styler.Style.Blocks do
         # disable keyword `, do:` since there will be multiple statements in the body
         with_meta =
           if Enum.any?(postroll),
-            do: Keyword.merge(with_meta, do: [line: with_meta[:line]], end: [line: Style.max_line(children) + 1]),
+            do:
+              Keyword.merge(with_meta,
+                do: [line: with_meta[:line]],
+                end: [line: Style.max_line(children) + 1]
+              ),
             else: with_meta
 
         with_children = Enum.reverse(reversed_clauses, [[{do_block, do_body} | elses]])
@@ -192,7 +219,9 @@ defmodule Styler.Style.Blocks do
       # Credo.Check.Refactor.NegatedConditionsWithElse
       # if !x, do: y, else: z => if x, do: z, else: y
       [negator, [{do_, do_body}, {else_, else_body}]] when is_negator(negator) ->
-        zipper |> Zipper.replace({:if, m, [invert(negator), [{do_, else_body}, {else_, do_body}]]}) |> run(ctx)
+        zipper
+        |> Zipper.replace({:if, m, [invert(negator), [{do_, else_body}, {else_, do_body}]]})
+        |> run(ctx)
 
       # drop `else end`
       [head, [do_block, {_, {:__block__, _, []}}]] ->
@@ -266,7 +295,9 @@ defmodule Styler.Style.Blocks do
         # b
         # c
         # x = d
-        Zipper.update(zipper, fn {:with, meta, _} -> {:__block__, Keyword.take(meta, [:line]), block} end)
+        Zipper.update(zipper, fn {:with, meta, _} ->
+          {:__block__, Keyword.take(meta, [:line]), block}
+        end)
     end
   end
 
@@ -318,7 +349,9 @@ defmodule Styler.Style.Blocks do
       end
 
     zipper
-    |> Zipper.replace({:if, [do: [line: line], end: [line: end_line], line: line], [head, [do_, else_]]})
+    |> Zipper.replace(
+      {:if, [do: [line: line], end: [line: end_line], line: line], [head, [do_, else_]]}
+    )
     |> run(%{ctx | comments: comments})
   end
 
