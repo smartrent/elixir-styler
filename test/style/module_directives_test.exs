@@ -107,13 +107,11 @@ defmodule Styler.Style.ModuleDirectivesTest do
         """
       )
 
-      assert_style(
-        """
-        defmodule Foo do
-          use Bar
-        end
-        """
-      )
+      assert_style("""
+      defmodule Foo do
+        use Bar
+      end
+      """)
 
       assert_style(
         """
