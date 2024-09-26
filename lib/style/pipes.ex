@@ -326,13 +326,13 @@ defmodule Styler.Style.Pipes do
 
   defp valid_pipe_start?({fun, _, _args})
        when fun in [:case, :cond, :if, :quote, :unless, :with, :for] do
-    not Styler.Config.block_pipe_flag?()
+    not Styler.Config.block_pipe_flag?() or fun in Styler.Config.block_pipe_exclude()
   end
 
   # function_call(with, args) or sigils. sigils are allowed, function w/ args is not
   defp valid_pipe_start?({fun, meta, _args}) when is_atom(fun) do
     if Keyword.has_key?(meta, :do),
-      do: not Styler.Config.block_pipe_flag?(),
+      do: not Styler.Config.block_pipe_flag?() or fun in Styler.Config.block_pipe_exclude(),
       else: String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
   end
 

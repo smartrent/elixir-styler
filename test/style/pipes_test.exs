@@ -393,6 +393,20 @@ defmodule Styler.Style.PipesTest do
         """
       )
     end
+
+    test "ignores excluded functions" do
+      Styler.Config.set_for_test!(:block_pipe_exclude, [:case])
+
+      assert_style("""
+      case x do
+        x -> x
+      end
+      |> foo()
+      |> bar()
+      """)
+
+      Styler.Config.set_for_test!(:block_pipe_exclude, [])
+    end
   end
 
   describe "block pipe starts when credo check disabled" do

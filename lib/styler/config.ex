@@ -65,6 +65,7 @@ defmodule Styler.Config do
 
     :persistent_term.put(@key, %{
       block_pipe_flag: credo_opts[:block_pipe_flag] || false,
+      block_pipe_exclude: credo_opts[:block_pipe_exclude] || [],
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 98,
       reorder_configs: reorder_configs,
@@ -100,6 +101,10 @@ defmodule Styler.Config do
     get(:block_pipe_flag)
   end
 
+  def block_pipe_exclude() do
+    get(:block_pipe_exclude)
+  end
+
   def line_length() do
     get(:line_length)
   end
@@ -122,6 +127,7 @@ defmodule Styler.Config do
 
       {BlockPipe, opts}, acc when is_list(opts) ->
         Map.put(acc, :block_pipe_flag, true)
+        Map.put(acc, :block_pipe_exclude, opts[:exclude])
 
       {MaxLineLength, opts}, acc when is_list(opts) ->
         Map.put(acc, :line_length, opts[:max_length])
