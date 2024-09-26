@@ -51,7 +51,10 @@ defmodule Styler.Style.ModuleDirectives do
   @defstruct ~w(schema embedded_schema defstruct)a
 
   @module_placeholder "Xk9pLm3Qw7_RAND_PLACEHOLDER"
-  @moduledoc_false {:@, [line: nil], [{:moduledoc, [line: nil], [{:__block__, [line: nil], [@module_placeholder]}]}]}
+  @moduledoc_false {:@, [line: nil],
+                    [
+                      {:moduledoc, [line: nil], [{:__block__, [line: nil], [@module_placeholder]}]}
+                    ]}
 
   def run({{:defmodule, _, children}, _} = zipper, ctx) do
     if has_skip_comment?(ctx) do
@@ -64,7 +67,13 @@ defmodule Styler.Style.ModuleDirectives do
       else
         moduledoc = moduledoc(name)
         # Move the zipper's focus to the module's body
-        body_zipper = zipper |> Zipper.down() |> Zipper.right() |> Zipper.down() |> Zipper.down() |> Zipper.right()
+        body_zipper =
+          zipper
+          |> Zipper.down()
+          |> Zipper.right()
+          |> Zipper.down()
+          |> Zipper.down()
+          |> Zipper.right()
 
         case Zipper.node(body_zipper) do
           # an empty body - replace it with a moduledoc and call it a day ¯\_(ツ)_/¯
@@ -142,7 +151,10 @@ defmodule Styler.Style.ModuleDirectives do
   defp moduledoc({:__aliases__, m, aliases}) do
     name = aliases |> List.last() |> to_string()
     # module names ending with these suffixes will not have a default moduledoc appended
-    if !String.ends_with?(name, ~w(Test Mixfile MixProject Controller Endpoint Repo Router Socket View HTML JSON)) do
+    if !String.ends_with?(
+         name,
+         ~w(Test Mixfile MixProject Controller Endpoint Repo Router Socket View HTML JSON)
+       ) do
       Style.set_line(@moduledoc_false, m[:line] + 1)
     end
   end
@@ -206,8 +218,11 @@ defmodule Styler.Style.ModuleDirectives do
           {ast, acc} = lift_module_attrs(ast, acc)
           ast = expand(ast)
           # import and used get hoisted above aliases, so need to dealias
-          ast = if directive in ~w(import use)a, do: AliasEnv.expand(acc.dealiases, ast), else: ast
-          dealiases = if directive == :alias, do: AliasEnv.define(acc.dealiases, ast), else: acc.dealiases
+          ast =
+            if directive in ~w(import use)a, do: AliasEnv.expand(acc.dealiases, ast), else: ast
+
+          dealiases =
+            if directive == :alias, do: AliasEnv.define(acc.dealiases, ast), else: acc.dealiases
 
           # the reverse accounts for `expand` putting things in reading order, whereas we're accumulating in reverse
           %{acc | directive => Enum.reverse(ast, acc[directive]), dealiases: dealiases}
@@ -217,11 +232,20 @@ defmodule Styler.Style.ModuleDirectives do
       end)
       # Reversing once we're done accumulating since `reduce`ing into list accs means you're reversed!
       |> Map.new(fn
-        {:moduledoc, []} -> {:moduledoc, List.wrap(moduledoc)}
-        {:use, uses} -> {:use, uses |> Enum.reverse() |> Style.reset_newlines()}
-        {directive, to_sort} when directive in ~w(behaviour import alias require)a -> {directive, sort(to_sort)}
-        {:dealiases, d} -> {:dealiases, d}
-        {k, v} -> {k, Enum.reverse(v)}
+        {:moduledoc, []} ->
+          {:moduledoc, List.wrap(moduledoc)}
+
+        {:use, uses} ->
+          {:use, uses |> Enum.reverse() |> Style.reset_newlines()}
+
+        {directive, to_sort} when directive in ~w(behaviour import alias require)a ->
+          {directive, sort(to_sort)}
+
+        {:dealiases, d} ->
+          {:dealiases, d}
+
+        {k, v} ->
+          {k, Enum.reverse(v)}
       end)
       |> lift_aliases()
 
@@ -233,14 +257,20 @@ defmodule Styler.Style.ModuleDirectives do
 
         nondirectives =
           Enum.map(acc.nondirectives, fn
-            {:@, m, [{attr, am, _}]} = ast -> if attr in lifts, do: {:@, m, [{attr, am, [{attr, am, nil}]}]}, else: ast
-            ast -> ast
+            {:@, m, [{attr, am, _}]} = ast ->
+              if attr in lifts, do: {:@, m, [{attr, am, [{attr, am, nil}]}]}, else: ast
+
+            ast ->
+              ast
           end)
 
         assignments =
           Enum.flat_map(acc.nondirectives, fn
-            {:@, m, [{attr, am, [val]}]} -> if attr in lifts, do: [{:=, m, [{attr, am, nil}, val]}], else: []
-            _ -> []
+            {:@, m, [{attr, am, [val]}]} ->
+              if attr in lifts, do: [{:=, m, [{attr, am, nil}, val]}], else: []
+
+            _ ->
+              []
           end)
 
         {past, _} = parent
@@ -374,9 +404,15 @@ defmodule Styler.Style.ModuleDirectives do
     ast
     |> Zipper.zip()
     |> Zipper.traverse(fn
-      {{defx, _, [{:__aliases__, _, _} | _]}, _} = zipper when defx in ~w(defmodule defimpl defprotocol)a ->
+      {{defx, _, [{:__aliases__, _, _} | _]}, _} = zipper
+      when defx in ~w(defmodule defimpl defprotocol)a ->
         # move the focus to the body block, zkipping over the alias (and the `for` keyword for `defimpl`)
-        zipper |> Zipper.down() |> Zipper.rightmost() |> Zipper.down() |> Zipper.down() |> Zipper.right()
+        zipper
+        |> Zipper.down()
+        |> Zipper.rightmost()
+        |> Zipper.down()
+        |> Zipper.down()
+        |> Zipper.right()
 
       {{:alias, _, [{:__aliases__, _, [_, _, _ | _] = aliases}]}, _} = zipper ->
         # the alias was aliased deeper down. we've lifted that alias to a root, so delete this alias
@@ -434,6 +470,9 @@ defmodule Styler.Style.ModuleDirectives do
   end
 
   defp has_skip_comment?(context) do
-    Enum.any?(context.comments, &String.contains?(&1.text, "elixir-styler:skip-module-reordering"))
+    Enum.any?(
+      context.comments,
+      &String.contains?(&1.text, "elixir-styler:skip-module-reordering")
+    )
   end
 end

@@ -61,7 +61,8 @@ defmodule Styler.Config do
       end)
       |> MapSet.union(@stdlib)
 
-    reorder_configs = if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
+    reorder_configs =
+      if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
 
     :persistent_term.put(@key, %{
       block_pipe_flag: credo_opts[:block_pipe_flag] || false,
