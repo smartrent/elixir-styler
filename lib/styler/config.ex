@@ -12,6 +12,7 @@ defmodule Styler.Config do
   @moduledoc false
 
   alias Credo.Check.Readability.AliasOrder
+  alias Credo.Check.Readability.BlockPipe
   alias Credo.Check.Readability.MaxLineLength
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
   alias Styler.Style.Configs
@@ -63,6 +64,8 @@ defmodule Styler.Config do
     reorder_configs = if is_nil(config[:reorder_configs]), do: true, else: config[:reorder_configs]
 
     :persistent_term.put(@key, %{
+      block_pipe_flag: credo_opts[:block_pipe_flag] || false,
+      block_pipe_exclude: credo_opts[:block_pipe_exclude] || [],
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 98,
       reorder_configs: reorder_configs,
@@ -94,6 +97,14 @@ defmodule Styler.Config do
     get(:sort_order)
   end
 
+  def block_pipe_flag?() do
+    get(:block_pipe_flag)
+  end
+
+  def block_pipe_exclude() do
+    get(:block_pipe_exclude)
+  end
+
   def line_length() do
     get(:line_length)
   end
@@ -113,6 +124,10 @@ defmodule Styler.Config do
     Enum.reduce(read_credo_config().checks, %{}, fn
       {AliasOrder, opts}, acc when is_list(opts) ->
         Map.put(acc, :sort_order, opts[:sort_method])
+
+      {BlockPipe, opts}, acc when is_list(opts) ->
+        Map.put(acc, :block_pipe_flag, true)
+        Map.put(acc, :block_pipe_exclude, opts[:exclude])
 
       {MaxLineLength, opts}, acc when is_list(opts) ->
         Map.put(acc, :line_length, opts[:max_length])
