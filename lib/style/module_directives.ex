@@ -367,10 +367,17 @@ defmodule Styler.Style.ModuleDirectives do
         {:skip, zipper, lifts}
 
       {{:__aliases__, _, [_, _, _ | _] = aliases}, _} = zipper, lifts ->
+        alias_string = Enum.join(aliases, ".")
+
+        excluded_regex_match =
+          excluded
+          |> Stream.filter(&is_struct(&1, Regex))
+          |> Enum.any?(&Regex.match?(&1, alias_string))
+
         last = List.last(aliases)
 
         lifts =
-          if last in excluded or not Enum.all?(aliases, &is_atom/1) do
+          if excluded_regex_match or last in excluded or not Enum.all?(aliases, &is_atom/1) do
             lifts
           else
             Map.update(lifts, last, {aliases, false}, fn

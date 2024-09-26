@@ -56,8 +56,11 @@ defmodule Styler.Config do
             _ -> atom
           end
 
+        regex when is_struct(regex, Regex) ->
+          regex
+
         other ->
-          raise "Expected an atom for `alias_lifting_exclude`, got: #{inspect(other)}"
+          raise "Expected an atom or regex for `alias_lifting_exclude`, got: #{inspect(other)}"
       end)
       |> MapSet.union(@stdlib)
 

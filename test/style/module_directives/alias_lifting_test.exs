@@ -312,6 +312,40 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
       Styler.Config.set!([])
     end
 
+    test "collisions with configured regexes" do
+      Styler.Config.set!(alias_lifting_exclude: [~r/A.B/])
+
+      assert_style(
+        """
+        defmodule MyModule do
+          alias Foo.Bar
+
+          X.Y.Z.bar()
+          X.Y.Z.bar()
+          A.B.C.foo()
+          A.B.C.foo()
+          A.B.C.D.foo()
+          A.B.C.D.foo()
+        end
+        """,
+        """
+        defmodule MyModule do
+          alias Foo.Bar
+          alias X.Y.Z
+
+          Z.bar()
+          Z.bar()
+          A.B.C.foo()
+          A.B.C.foo()
+          A.B.C.D.foo()
+          A.B.C.D.foo()
+        end
+        """
+      )
+
+      Styler.Config.set!([])
+    end
+
     test "collisions with std lib" do
       assert_style """
       defmodule DontYouDare do
