@@ -16,6 +16,7 @@ defmodule Styler.Config do
   alias Credo.Check.Readability.MaxLineLength
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
   alias Credo.Check.Readability.SinglePipe
+  alias Credo.Check.Refactor.PipeChainStart
   alias Styler.Style.Configs
 
   @key __MODULE__
@@ -73,6 +74,9 @@ defmodule Styler.Config do
       block_pipe_exclude: credo_opts[:block_pipe_exclude] || [],
       lifting_excludes: excludes,
       line_length: credo_opts[:line_length] || 98,
+      pipe_chain_start_flag: credo_opts[:pipe_chain_start_flag] || false,
+      pipe_chain_start_excluded_functions: credo_opts[:pipe_chain_start_excluded_functions] || [],
+      pipe_chain_start_excluded_argument_types: credo_opts[:pipe_chain_start_excluded_argument_types] || [],
       reorder_configs: reorder_configs,
       single_pipe_flag: credo_opts[:single_pipe_flag] || false,
       sort_order: credo_opts[:sort_order] || :alpha,
@@ -115,6 +119,18 @@ defmodule Styler.Config do
     get(:line_length)
   end
 
+  def pipe_chain_start_excluded_functions() do
+    get(:pipe_chain_start_excluded_functions)
+  end
+
+  def pipe_chain_start_excluded_argument_types() do
+    get(:pipe_chain_start_excluded_argument_types)
+  end
+
+  def refactor_pipe_chain_starts?() do
+    get(:pipe_chain_start_flag)
+  end
+
   def single_pipe_flag?() do
     get(:single_pipe_flag)
   end
@@ -136,14 +152,21 @@ defmodule Styler.Config do
         Map.put(acc, :sort_order, opts[:sort_method])
 
       {BlockPipe, opts}, acc when is_list(opts) ->
-        Map.put(acc, :block_pipe_flag, true)
-        Map.put(acc, :block_pipe_exclude, opts[:exclude])
+        acc
+        |> Map.put(:block_pipe_flag, true)
+        |> Map.put(:block_pipe_exclude, opts[:exclude])
 
       {MaxLineLength, opts}, acc when is_list(opts) ->
         Map.put(acc, :line_length, opts[:max_length])
 
       {ParenthesesOnZeroArityDefs, opts}, acc when is_list(opts) ->
         Map.put(acc, :zero_arity_parens, opts[:parens])
+
+      {PipeChainStart, opts}, acc when is_list(opts) ->
+        acc
+        |> Map.put(:pipe_chain_start_flag, true)
+        |> Map.put(:pipe_chain_start_excluded_functions, opts[:excluded_functions])
+        |> Map.put(:pipe_chain_start_excluded_argument_types, opts[:excluded_argument_types])
 
       {SinglePipe, opts}, acc when is_list(opts) ->
         Map.put(acc, :single_pipe_flag, true)
