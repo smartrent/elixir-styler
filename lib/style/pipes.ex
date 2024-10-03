@@ -51,24 +51,28 @@ defmodule Styler.Style.Pipes do
             {:cont, single_pipe_unquote_zipper, ctx}
 
           {{:|>, _, [lhs, rhs]}, _} = single_pipe_zipper ->
-            {_, meta, _} = lhs
-            # try to get everything on one line if we can
-            line = meta[:line]
-            {fun, meta, args} = rhs
-            args = args || []
+            if Styler.Config.single_pipe_flag?() do
+              {_, meta, _} = lhs
+              # try to get everything on one line if we can
+              line = meta[:line]
+              {fun, meta, args} = rhs
+              args = args || []
 
-            # no way multi-headed fn fits on one line; everything else (?) is just a matter of line length
-            args =
-              if Enum.any?(args, &match?({:fn, _, [{:->, _, _}, {:->, _, _} | _]}, &1)) do
-                Style.shift_line(args, -1)
-              else
-                Style.set_line(args, line)
-              end
+              # no way multi-headed fn fits on one line; everything else (?) is just a matter of line length
+              args =
+                if Enum.any?(args, &match?({:fn, _, [{:->, _, _}, {:->, _, _} | _]}, &1)) do
+                  Style.shift_line(args, -1)
+                else
+                  Style.set_line(args, line)
+                end
 
-            lhs = Style.set_line(lhs, line)
-            {_, meta, _} = Style.set_line({:ignore, meta, []}, line)
-            function_call_zipper = Zipper.replace(single_pipe_zipper, {fun, meta, [lhs | args]})
-            {:cont, function_call_zipper, ctx}
+              lhs = Style.set_line(lhs, line)
+              {_, meta, _} = Style.set_line({:ignore, meta, []}, line)
+              function_call_zipper = Zipper.replace(single_pipe_zipper, {fun, meta, [lhs | args]})
+              {:cont, function_call_zipper, ctx}
+            else
+              {:cont, single_pipe_zipper, ctx}
+            end
         end
 
       non_pipe ->
