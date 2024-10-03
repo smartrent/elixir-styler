@@ -16,6 +16,7 @@ defmodule Styler.Style.StylesTest do
 
   describe "pipes + defs" do
     test "pipes doesnt abuse meta and break defs" do
+      Styler.Config.set_for_test!(:single_pipe_flag, true)
       assert_style(
         """
         foo
@@ -33,6 +34,8 @@ defmodule Styler.Style.StylesTest do
         end)
         """
       )
+
+      Styler.Config.set_for_test!(:single_pipe_flag, false)
     end
   end
 end

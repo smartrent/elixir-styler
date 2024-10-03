@@ -11,6 +11,16 @@
 defmodule Styler.Style.PipesTest do
   use Styler.StyleCase, async: true
 
+  setup do
+    Styler.Config.set_for_test!(:single_pipe_flag, true)
+
+    on_exit(fn ->
+      Styler.Config.set_for_test!(:single_pipe_flag, false)
+    end)
+
+    :ok
+  end
+
   describe "big picture" do
     test "unnests multiple steps" do
       assert_style("f(g(h(x))) |> j()", "x |> h() |> g() |> f() |> j()")
@@ -554,7 +564,7 @@ defmodule Styler.Style.PipesTest do
     end
   end
 
-  describe "single pipe issues" do
+  describe "single pipe issues when credo check enabled" do
     test "allows unquote single pipes" do
       assert_style("foo |> unquote(bar)")
     end
@@ -619,6 +629,71 @@ defmodule Styler.Style.PipesTest do
           end
 
         foo(if_result, bar)
+        """
+      )
+
+      Styler.Config.set_for_test!(:block_pipe_flag, false)
+    end
+  end
+  describe "single pipe when credo check disabled" do
+    setup do
+      Styler.Config.set_for_test!(:single_pipe_flag, false)
+
+      on_exit(fn ->
+        Styler.Config.set_for_test!(:single_pipe_flag, true)
+      end)
+
+      :ok
+    end
+
+    test "allows unquote single pipes" do
+      assert_style("foo |> unquote(bar)")
+    end
+
+    test "fixes simple single pipes" do
+      assert_style("b(a) |> c()", "a |> b() |> c()")
+      assert_style("a |> f()")
+      assert_style("x |> bar", "x |> bar()")
+      assert_style("def a(), do: b |> c()")
+    end
+
+    test "keeps invocation on a single line" do
+      assert_style("""
+      foo
+      |> bar(baz, bop, boom)
+      """)
+
+      assert_style("""
+      foo
+      |> bar(baz)
+      """)
+
+      assert_style("""
+      def halt(exec, halt_message) do
+        %__MODULE__{exec | halted: true}
+        |> put_halt_message(halt_message)
+      end
+      """)
+
+      Styler.Config.set_for_test!(:block_pipe_flag, true)
+
+      assert_style(
+        """
+        if true do
+          false
+        end
+        |> foo(
+          bar
+        )
+        """,
+        """
+        if_result =
+          if true do
+            false
+          end
+
+        if_result
+        |> foo(bar)
         """
       )
 
