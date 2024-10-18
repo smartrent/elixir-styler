@@ -2,7 +2,7 @@
 
 ## Pipe Start
 
-Styler will ensure that the start of a pipechain is a 0-arity function, a raw value, or a variable.
+Quokka will ensure that the start of a pipechain is a 0-arity function, a raw value, or a variable.
 
 ```elixir
 Enum.at(enum, 5)
@@ -14,7 +14,7 @@ enum
 |> IO.inspect()
 ```
 
-If the start of a pipe is a block expression, styler will create a new variable to store the result of that expression and make that variable the start of the pipe.
+If the start of a pipe is a block expression, quokka will create a new variable to store the result of that expression and make that variable the start of the pipe.
 
 ```elixir
 if a do
@@ -109,7 +109,7 @@ a |> b() |> Enum.each(fun)
 
 ### Unpiping Single Pipes
 
-Styler rewrites pipechains with a single pipe to be function calls. Notably, this rule combined with the optimizations rewrites above means some chains with more than one pipe will also become function calls.
+Quokka rewrites pipechains with a single pipe to be function calls. Notably, this rule combined with the optimizations rewrites above means some chains with more than one pipe will also become function calls.
 
 ```elixir
 foo = bar |> baz()

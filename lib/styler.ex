@@ -8,24 +8,24 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler do
+defmodule Quokka do
   @moduledoc """
-  Styler is a formatter plugin with stronger opinions on code organization, multi-line defs and other code-style matters.
+  Quokka is a formatter plugin with stronger opinions on code organization, multi-line defs and other code-style matters.
   """
   @behaviour Mix.Tasks.Format
 
   alias Mix.Tasks.Format
-  alias Styler.StyleError
-  alias Styler.Zipper
+  alias Quokka.StyleError
+  alias Quokka.Zipper
 
   @doc false
   def style({ast, comments}, file, opts) do
     on_error = opts[:on_error] || :log
-    Styler.Config.set(opts)
+    Quokka.Config.set(opts)
     zipper = Zipper.zip(ast)
 
     {{ast, _}, comments} =
-      Enum.reduce(Styler.Config.get_styles(), {zipper, comments}, fn style, {zipper, comments} ->
+      Enum.reduce(Quokka.Config.get_styles(), {zipper, comments}, fn style, {zipper, comments} ->
         context = %{comments: comments, file: file}
 
         try do
@@ -46,7 +46,7 @@ defmodule Styler do
       end)
 
     zipper = Zipper.zip(ast)
-    moduledoc_placeholder = Styler.Style.ModuleDirectives.moduledoc_placeholder()
+    moduledoc_placeholder = Quokka.Style.ModuleDirectives.moduledoc_placeholder()
 
     {{ast, _}, _} =
       Zipper.traverse_while(zipper, nil, fn
@@ -66,7 +66,7 @@ defmodule Styler do
   @impl Format
   def format(input, formatter_opts) do
     file = formatter_opts[:file]
-    styler_opts = formatter_opts[:styler] || []
+    styler_opts = formatter_opts[:quokka] || []
 
     {ast, comments} =
       input
@@ -94,7 +94,7 @@ defmodule Styler do
   # Turns an ast and comments back into code, formatting it along the way.
   def quoted_to_string(ast, comments, formatter_opts \\ []) do
     opts = [{:comments, comments}, {:escape, false} | formatter_opts]
-    line_length = Styler.Config.line_length()
+    line_length = Quokka.Config.line_length()
 
     formatted =
       ast

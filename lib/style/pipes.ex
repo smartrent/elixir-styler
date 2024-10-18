@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.Pipes do
+defmodule Quokka.Style.Pipes do
   @moduledoc """
   Styles pipes! In particular, don't make pipe chains of only one pipe, and some persnickety pipe chain start stuff.
 
@@ -24,10 +24,10 @@ defmodule Styler.Style.Pipes do
     * Credo.Check.Refactor.PipeChainStart, excluded_functions: ["from"]
   """
 
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
-  alias Styler.Style
-  alias Styler.Zipper
+  alias Quokka.Style
+  alias Quokka.Zipper
 
   @collectable ~w(Map Keyword MapSet)a
   @enum ~w(Enum Stream)a
@@ -51,7 +51,7 @@ defmodule Styler.Style.Pipes do
             {:cont, single_pipe_unquote_zipper, ctx}
 
           {{:|>, _, [lhs, rhs]}, _} = single_pipe_zipper ->
-            if Styler.Config.single_pipe_flag?() do
+            if Quokka.Config.single_pipe_flag?() do
               {_, meta, _} = lhs
               # try to get everything on one line if we can
               line = meta[:line]
@@ -323,9 +323,9 @@ defmodule Styler.Style.Pipes do
   defp valid_pipe_start?({{:., _, [List, :to_charlist]}, _, _}), do: true
   # n-arity Module.function_call(...args)
   defp valid_pipe_start?({{:., _, [{_, _, [mod]}, fun]}, _, arguments}) do
-    not Styler.Config.refactor_pipe_chain_starts?() or
+    not Quokka.Config.refactor_pipe_chain_starts?() or
       first_arg_excluded_type?(arguments) or
-      "#{mod}.#{fun}" in Styler.Config.pipe_chain_start_excluded_functions()
+      "#{mod}.#{fun}" in Quokka.Config.pipe_chain_start_excluded_functions()
   end
 
   # variable
@@ -334,14 +334,14 @@ defmodule Styler.Style.Pipes do
   defp valid_pipe_start?({fun, _, []}) when is_atom(fun), do: true
 
   defp valid_pipe_start?({fun, _, _args}) when fun in [:case, :cond, :if, :quote, :unless, :with, :for] do
-    not Styler.Config.block_pipe_flag?() or fun in Styler.Config.block_pipe_exclude()
+    not Quokka.Config.block_pipe_flag?() or fun in Quokka.Config.block_pipe_exclude()
   end
 
   # function_call(with, args) or sigils. sigils are allowed, function w/ args is not
   defp valid_pipe_start?({fun, meta, args}) when is_atom(fun) do
-    not Styler.Config.refactor_pipe_chain_starts?() or first_arg_excluded_type?(args) or
-      (custom_macro?(meta) and (not Styler.Config.block_pipe_flag?() or fun in Styler.Config.block_pipe_exclude())) or
-      "#{fun}" in Styler.Config.pipe_chain_start_excluded_functions() or
+    not Quokka.Config.refactor_pipe_chain_starts?() or first_arg_excluded_type?(args) or
+      (custom_macro?(meta) and (not Quokka.Config.block_pipe_flag?() or fun in Quokka.Config.block_pipe_exclude())) or
+      "#{fun}" in Quokka.Config.pipe_chain_start_excluded_functions() or
       String.match?("#{fun}", ~r/^sigil_[a-zA-Z]$/)
   end
 
@@ -350,39 +350,39 @@ defmodule Styler.Style.Pipes do
   defp custom_macro?(meta), do: Keyword.has_key?(meta, :do)
 
   defp first_arg_excluded_type?([{:%{}, _, _} | _]),
-    do: :map in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :map in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{:{}, _, _} | _]),
-    do: :tuple in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :tuple in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{:sigil_r, _, _} | _]),
-    do: :regex in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :regex in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{:sigil_R, _, _} | _]),
-    do: :regex in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :regex in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{:<<>>, _, _} | _]),
-    do: :bitstring in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :bitstring in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
 
   defp first_arg_excluded_type?([{:&, _, _} | _]),
-    do: :fn in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :fn in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{:fn, _, _} | _]),
-    do: :fn in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :fn in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   defp first_arg_excluded_type?([{_, _, [arg1 | _]} | _]) do
     case arg1 do
       [{{:__block__, [format: :keyword, line: _], _}, _} | _] ->
-        :keyword in Styler.Config.pipe_chain_start_excluded_argument_types() or :list in Styler.Config.pipe_chain_start_excluded_argument_types()
+        :keyword in Quokka.Config.pipe_chain_start_excluded_argument_types() or :list in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
       _ ->
-        get_type(arg1) in Styler.Config.pipe_chain_start_excluded_argument_types()
+        get_type(arg1) in Quokka.Config.pipe_chain_start_excluded_argument_types()
     end
   end
 
   defp first_arg_excluded_type?([[{{:__block__, [format: :keyword, line: _], _}, _} | _] | _]),
-    do: :keyword in Styler.Config.pipe_chain_start_excluded_argument_types() or :list in Styler.Config.pipe_chain_start_excluded_argument_types()
+    do: :keyword in Quokka.Config.pipe_chain_start_excluded_argument_types() or :list in Quokka.Config.pipe_chain_start_excluded_argument_types()
 
   # Bare variables are not excluded
   defp first_arg_excluded_type?(_), do: false

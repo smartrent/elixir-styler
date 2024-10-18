@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style do
+defmodule Quokka.Style do
   @moduledoc """
   A Style takes AST and returns a transformed version of that AST.
 
@@ -16,7 +16,7 @@ defmodule Styler.Style do
   called a Zipper to facilitate walking the trees.
   """
 
-  alias Styler.Zipper
+  alias Quokka.Zipper
 
   @type context :: %{
           comments: [map()],

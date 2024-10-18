@@ -15,9 +15,9 @@ Once a file is detected as a mix config, its `config/2,3` stanzas are grouped an
 
 ## THIS CAN BREAK YOUR PROGRAM
 
-It's important to double check your configuration after running Styler on it for the first time.
+It's important to double check your configuration after running Quokka on it for the first time.
 
-**First Use Advice**: To limit the size of changes Styler submits to a codebase, we recommend formatting only a few (or a single) files at a time and making pull requests for each. Only commit Styler as a new formatter plugin once each of these more dangerous changes has been safely committed to the codebase.
+**First Use Advice**: To limit the size of changes Quokka submits to a codebase, we recommend formatting only a few (or a single) files at a time and making pull requests for each. Only commit Quokka as a new formatter plugin once each of these more dangerous changes has been safely committed to the codebase.
 
 Imagine your application configures the same value twice, once with an invalid or application breaking value, and then again with a correct value, like so:
 
@@ -31,7 +31,7 @@ config :my_app, value_must_be_an_atom: string
 config :my_app, value_must_be_an_atom: atom
 ```
 
-When styler sorts the configuration file, this dormant mistake can become a bug if the sorting changes the order such that the invalid value takes precedence (aka comes last)
+When quokka sorts the configuration file, this dormant mistake can become a bug if the sorting changes the order such that the invalid value takes precedence (aka comes last)
 
 ```elixir
 string = "i am a string"

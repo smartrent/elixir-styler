@@ -8,8 +8,8 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.DeprecationsTest do
-  use Styler.StyleCase, async: true
+defmodule Quokka.Style.DeprecationsTest do
+  use Quokka.StyleCase, async: true
 
   test "Logger.warn to Logger.warning" do
     assert_style("Logger.warn(foo)", "Logger.warning(foo)")

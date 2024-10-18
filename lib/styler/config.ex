@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Config do
+defmodule Quokka.Config do
   @moduledoc false
 
   alias Credo.Check.Readability.AliasOrder
@@ -17,17 +17,17 @@ defmodule Styler.Config do
   alias Credo.Check.Readability.ParenthesesOnZeroArityDefs
   alias Credo.Check.Readability.SinglePipe
   alias Credo.Check.Refactor.PipeChainStart
-  alias Styler.Style.Configs
+  alias Quokka.Style.Configs
 
   @key __MODULE__
 
   @styles [
-    Styler.Style.ModuleDirectives,
-    Styler.Style.Pipes,
-    Styler.Style.SingleNode,
-    Styler.Style.Defs,
-    Styler.Style.Blocks,
-    Styler.Style.Deprecations,
+    Quokka.Style.ModuleDirectives,
+    Quokka.Style.Pipes,
+    Quokka.Style.SingleNode,
+    Quokka.Style.Defs,
+    Quokka.Style.Blocks,
+    Quokka.Style.Deprecations,
     Configs
   ]
 

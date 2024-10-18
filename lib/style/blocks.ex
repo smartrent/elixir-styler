@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.Blocks do
+defmodule Quokka.Style.Blocks do
   @moduledoc """
   Simple 1-1 rewrites all crammed into one module to make for more efficient traversals
 
@@ -24,10 +24,10 @@ defmodule Styler.Style.Blocks do
   * Credo.Check.Refactor.WithClauses
   """
 
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
-  alias Styler.Style
-  alias Styler.Zipper
+  alias Quokka.Style
+  alias Quokka.Zipper
 
   defguardp is_negator(n) when elem(n, 0) in [:!, :not, :!=, :!==]
 

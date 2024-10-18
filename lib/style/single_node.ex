@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.SingleNode do
+defmodule Quokka.Style.SingleNode do
   @moduledoc """
   Simple 1-1 rewrites all crammed into one module to make for more efficient traversals
 
@@ -26,7 +26,7 @@ defmodule Styler.Style.SingleNode do
   * Credo.Check.Refactor.WithClauses
   """
 
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
   @closing_delimiters [~s|"|, ")", "}", "|", "]", "'", ">", "/"]
 
@@ -77,7 +77,7 @@ defmodule Styler.Style.SingleNode do
   end
 
   # Add / Correct `_` location in large numbers. Formatter handles large number (>5 digits) rewrites,
-  # but doesn't rewrite typos like `100_000_0`, so it's worthwhile to have Styler do this
+  # but doesn't rewrite typos like `100_000_0`, so it's worthwhile to have Quokka do this
   #
   # `?-` isn't part of the number node - it's its parent - so all numbers are positive at this point
   defp style({:__block__, meta, [number]}) when is_number(number) and number >= 10_000 do
@@ -167,14 +167,14 @@ defmodule Styler.Style.SingleNode do
 
   # Remove parens from 0 arity funs (Credo.Check.Readability.ParenthesesOnZeroArityDefs)
   defp style({def, dm, [{fun, funm, []} | rest]} = node) when def in ~w(def defp)a and is_atom(fun) do
-    if Styler.Config.zero_arity_parens?(),
+    if Quokka.Config.zero_arity_parens?(),
       do: node,
       else: style({def, dm, [{fun, Keyword.delete(funm, :closing), nil} | rest]})
   end
 
   # Add parens to 0 arity funs (Credo.Check.Readability.ParenthesesOnZeroArityDefs)
   defp style({def, dm, [{fun, funm, nil} | rest]} = node) when def in ~w(def defp)a and is_atom(fun) do
-    if Styler.Config.zero_arity_parens?(),
+    if Quokka.Config.zero_arity_parens?(),
       do: {def, dm, [{fun, Keyword.put(funm, :closing, line: funm[:line]), []} | rest]},
       else: node
   end

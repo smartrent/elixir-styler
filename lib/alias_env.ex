@@ -1,4 +1,4 @@
-defmodule Styler.AliasEnv do
+defmodule Quokka.AliasEnv do
   @moduledoc """
   A datastructure for maintaining something like compiler alias state when traversing AST.
 

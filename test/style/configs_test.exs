@@ -8,15 +8,15 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.ConfigsTest do
+defmodule Quokka.Style.ConfigsTest do
   @moduledoc false
-  use Styler.StyleCase, async: true, filename: "config/config.exs"
+  use Quokka.StyleCase, async: true, filename: "config/config.exs"
 
-  alias Styler.Style.Configs
+  alias Quokka.Style.Configs
 
   test "only runs on exs files in config folders" do
-    {ast, _} = Styler.string_to_quoted_with_comments("import Config\n\nconfig :bar, boop: :baz")
-    zipper = Styler.Zipper.zip(ast)
+    {ast, _} = Quokka.string_to_quoted_with_comments("import Config\n\nconfig :bar, boop: :baz")
+    zipper = Quokka.Zipper.zip(ast)
 
     for file <- ~w(dev.exs my_app.exs config.exs) do
       # :config? is private api, so don't be surprised if this has to change at some point

@@ -8,16 +8,16 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.MixProject do
+defmodule Quokka.MixProject do
   use Mix.Project
 
   # Don't forget to bump the README when doing non-patch version changes
   @version "1.1.1"
-  @url "https://github.com/adobe/elixir-styler"
+  @url "https://github.com/smartrent/quokka"
 
   def project() do
     [
-      app: :styler,
+      app: :quokka,
       version: @version,
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
@@ -29,7 +29,7 @@ defmodule Styler.MixProject do
       description: "A code-style enforcer that will just FIFY instead of complaining",
 
       # Docs
-      name: "Styler",
+      name: "Quokka",
       docs: docs()
     ]
   end
@@ -70,8 +70,8 @@ defmodule Styler.MixProject do
         "docs/control_flow_macros.md": [title: "Control Flow Macros (if, case, ...)"],
         "docs/mix_configs.md": [title: "Mix Configs (config/config.exs, ...)"],
         "docs/module_directives.md": [title: "Module Directives (use, alias, ...)"],
-        "docs/credo.md": [title: "Styler & Credo"],
-        "README.md": [title: "Styler"]
+        "docs/credo.md": [title: "Quokka & Credo"],
+        "README.md": [title: "Quokka"]
       ]
     ]
   end

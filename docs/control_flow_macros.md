@@ -3,7 +3,7 @@
 Elixir's Kernel documentation refers to these structures as "macros for control-flow".
 We often refer to them as "blocks" in our changelog, which is a much worse name, to be sure.
 
-You're likely here just to see what Styler does, in which case, please [click here to skip](#if-and-unless) the following manifesto on our philosophy regarding the usage of these macros.
+You're likely here just to see what Quokka does, in which case, please [click here to skip](#if-and-unless) the following manifesto on our philosophy regarding the usage of these macros.
 
 ## Which Control Flow Macro Should I Use?
 
@@ -48,7 +48,7 @@ end
 
 ## `if` and `unless`
 
-Styler removes `else: nil` clauses:
+Quokka removes `else: nil` clauses:
 
 ```elixir
 if a, do: b, else: nil
@@ -58,7 +58,7 @@ if a, do: b
 
 ### Negation Inversion
 
-Styler removes negators in the head of `if` and `unless` statements by "inverting" the statement.
+Quokka removes negators in the head of `if` and `unless` statements by "inverting" the statement.
 The following operators are considered "negators": `!`, `not`, `!=`, `!==`
 
 
@@ -100,10 +100,10 @@ if x, do: y
 
 Trivial true/false `case` statements are rewritten to `if` statements. While this results in a [semantically different program](https://github.com/rrrene/credo/issues/564#issue-338349517), we argue that it results in a better program for maintainability. If the developer wants their case statement to raise when receiving a non-boolean value as a feature of the program, they would better serve their callers by raising something more descriptive.
 
-In other words, Styler leaves the code with better style, trumping obscure exception design :)
+In other words, Quokka leaves the code with better style, trumping obscure exception design :)
 
 ```elixir
-# Styler will rewrite this even if the clause order is flipped,
+# Quokka will rewrite this even if the clause order is flipped,
 # and if the `false` is replaced with a wildcard (`_`)
 case foo do
   true -> :ok
@@ -130,7 +130,7 @@ end
 
 ## `cond`
 
-Styler has only one `cond` statement rewrite: replace 2-clause statements with `if` statements.
+Quokka has only one `cond` statement rewrite: replace 2-clause statements with `if` statements.
 
 ```elixir
 # Given
@@ -148,7 +148,7 @@ end
 
 ## `with`
 
-`with` statements are extremely expressive. Styler tries to remove any unnecessary complexity from them in the following ways.
+`with` statements are extremely expressive. Quokka tries to remove any unnecessary complexity from them in the following ways.
 
 ### Remove Identity Else Clause
 
@@ -171,7 +171,7 @@ end
 
 While you might think "surely this kind of code never appears in the wild", it absolutely does. Typically it's the result of someone refactoring a pattern away and not looking at the larger picture and realizing that the with statement now serves no purpose.
 
-Maybe someday the compiler will warn about these use cases. Until then, Styler to the rescue.
+Maybe someday the compiler will warn about these use cases. Until then, Quokka to the rescue.
 
 ```elixir
 # Given:
@@ -215,7 +215,7 @@ end
 
 ### Replace non-branching `bar <-` with `bar =`
 
-`<-` is for branching. If the lefthand side is the trivial match (a bare variable), Styler rewrites it to use the `=` operator instead.
+`<-` is for branching. If the lefthand side is the trivial match (a bare variable), Quokka rewrites it to use the `=` operator instead.
 
 ```elixir
 # Given
@@ -234,7 +234,7 @@ with :ok <- foo(),
 
 Just because any program _could_ be written entirely within the head of a `with` statement doesn't mean it should be!
 
-Styler moves assignments that aren't trapped between `<-` outside of the head. Combined with the non-pattern-matching replacement above, we get the following:
+Quokka moves assignments that aren't trapped between `<-` outside of the head. Combined with the non-pattern-matching replacement above, we get the following:
 
 ```elixir
 # Given
@@ -262,7 +262,7 @@ end
 
 ### Remove redundant final clause
 
-If the pattern of the final clause of the head is also the `with` statements `do` body, styler nixes the final match and makes the right hand side of the clause into the do body.
+If the pattern of the final clause of the head is also the `with` statements `do` body, quokka nixes the final match and makes the right hand side of the clause into the do body.
 
 ```elixir
 # Given
@@ -298,7 +298,7 @@ end
 
 ### Replace with `if`
 
-Given Styler rewrites trivial `case` to `if`, it shouldn't be a surprise that that same rule means that `with` can be rewritten to `if` in some cases.
+Given Quokka rewrites trivial `case` to `if`, it shouldn't be a surprise that that same rule means that `with` can be rewritten to `if` in some cases.
 
 ```elixir
 # Given:

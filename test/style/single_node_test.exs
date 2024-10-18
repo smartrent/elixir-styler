@@ -8,8 +8,8 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.SingleNodeTest do
-  use Styler.StyleCase, async: true
+defmodule Quokka.Style.SingleNodeTest do
+  use Quokka.StyleCase, async: true
 
   test "string sigil rewrites" do
     assert_style ~s|""|
@@ -139,8 +139,8 @@ defmodule Styler.Style.SingleNodeTest do
       assert_style("def metaprogramming(foo)(), do: bar")
     end
 
-    test "0-arity functions have parens removed when Styler.Config.zero_arity_parens? is false" do
-      Styler.Config.set_for_test!(:zero_arity_parens, false)
+    test "0-arity functions have parens removed when Quokka.Config.zero_arity_parens? is false" do
+      Quokka.Config.set_for_test!(:zero_arity_parens, false)
 
       assert_style("def foo(), do: :ok", "def foo, do: :ok")
       assert_style("defp foo(), do: :ok", "defp foo, do: :ok")
@@ -174,7 +174,7 @@ defmodule Styler.Style.SingleNodeTest do
       # Regression: be wary of invocations with extra parens from metaprogramming
       assert_style("def metaprogramming(foo)(), do: bar")
 
-      Styler.Config.set_for_test!(:zero_arity_parens, true)
+      Quokka.Config.set_for_test!(:zero_arity_parens, true)
     end
 
     test "prefers implicit try" do
