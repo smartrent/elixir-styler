@@ -349,9 +349,6 @@ defmodule Styler.Style.Pipes do
 
   defp custom_macro?(meta), do: Keyword.has_key?(meta, :do)
 
-  defp first_arg_excluded_type?([{:@, _, _} | _]),
-    do: :const in Styler.Config.pipe_chain_start_excluded_argument_types()
-
   defp first_arg_excluded_type?([{:%{}, _, _} | _]),
     do: :map in Styler.Config.pipe_chain_start_excluded_argument_types()
 

@@ -1147,23 +1147,6 @@ defmodule Styler.Style.PipesTest do
       Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
-    test "doesn't extract >0 arity functions with const argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:const])
-
-      assert_style("""
-      defmodule Test do
-        @apple :myconst
-        def p() do
-          f(@apple)
-          |> g()
-          |> h()
-        end
-      end
-      """)
-
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
-    end
-
     test "doesn't extract >0 arity functions with list argument" do
       Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:list])
 
