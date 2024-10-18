@@ -13,9 +13,11 @@ defmodule Styler.Style.PipesTest do
 
   setup do
     Styler.Config.set_for_test!(:single_pipe_flag, true)
+    Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
 
     on_exit(fn ->
       Styler.Config.set_for_test!(:single_pipe_flag, false)
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
     end)
 
     :ok
@@ -635,6 +637,7 @@ defmodule Styler.Style.PipesTest do
       Styler.Config.set_for_test!(:block_pipe_flag, false)
     end
   end
+
   describe "single pipe when credo check disabled" do
     setup do
       Styler.Config.set_for_test!(:single_pipe_flag, false)
@@ -1044,6 +1047,242 @@ defmodule Styler.Style.PipesTest do
 
                    excluded_first = MapSet.union(aliased, @excluded_namespaces)
                    """
+    end
+  end
+
+  describe "n-arity functions" do
+    test "doesn't extract >0 arity functions when disabled" do
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
+
+      assert_style("""
+      M.f(a, b)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(a, b)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
+    end
+
+    test "doesn't extract >0 arity functions when function in excluded_functions" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_functions, ["f", "Enum.map"])
+
+      assert_style("""
+      f(a, b)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      Enum.map([1, 2, 3], &(&1 * 2))
+      |> Enum.reverse()
+      |> Enum.sum()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_functions, [])
+    end
+
+    test "doesn't extract >0 arity functions with atom argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:atom])
+
+      assert_style("""
+      f(:my_atom)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with binary argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:binary])
+
+      assert_style("""
+      f("my string", b, c)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with bitstring argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:bitstring])
+
+      assert_style("""
+      f(<<1>>)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(<<1::integer-size(8), 2::integer-size(8), 3::integer-size(8)>>)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with boolean argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:boolean])
+
+      assert_style("""
+      f(true)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(false)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with list argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:list])
+
+      assert_style("""
+      f([1, 2, 3])
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f([a: 1, b: 2, c: 3])
+      |> g()
+      |> h()
+      """,
+      """
+      f(a: 1, b: 2, c: 3)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with keyword list argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:keyword])
+
+      assert_style("""
+      f(a: 1, b: 2, c: 3)
+      |> g()
+      |> h()
+      """)
+
+      assert_style(
+      """
+      f([a: 1, b: 2, c: 3])
+      |> g()
+      |> h()
+      """,
+      """
+      f(a: 1, b: 2, c: 3)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with map argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:map])
+
+      assert_style("""
+      f(%{a: 1, b: 2})
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with function arguments" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:fn])
+
+      assert_style("""
+      f(&String.length/1)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(fn x -> x * 2 end)
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with number argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:number])
+
+      assert_style("""
+      f(1)
+      |> g()
+      |> h()
+      """)
+
+      assert_style("""
+      f(1.0)
+      |> g()
+      |> h()
+      """)
+
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with regex argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:regex])
+
+      assert_style("""
+      Regex.run(~r/foo/, "foobar")
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "doesn't extract >0 arity functions with tuple argument" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:tuple])
+
+      assert_style("""
+      f({1, 2, 3})
+      |> g()
+      |> h()
+      """)
+
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+    end
+
+    test "extracts >0 arity functions with non-excluded argument types" do
+      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+
+      assert_style(
+        """
+        f(x)
+        |> g()
+        |> h()
+        """,
+        """
+        x
+        |> f()
+        |> g()
+        |> h()
+        """
+      )
     end
   end
 end
