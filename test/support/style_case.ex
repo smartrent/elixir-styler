@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.StyleCase do
+defmodule Quokka.StyleCase do
   @moduledoc """
   Helpers around testing Style rules.
   """
@@ -25,14 +25,14 @@ defmodule Styler.StyleCase do
   end
 
   setup_all do
-    Styler.Config.set([])
+    Quokka.Config.set([])
   end
 
   defmacro assert_style(before, expected \\ nil) do
     expected = expected || before
 
     quote bind_quoted: [before: before, expected: expected], location: :keep do
-      alias Styler.Zipper
+      alias Quokka.Zipper
 
       expected = String.trim(expected)
       {styled_ast, styled, styled_comments} = style(before, @filename)
@@ -40,11 +40,11 @@ defmodule Styler.StyleCase do
       if styled != expected and ExUnit.configuration()[:trace] do
         IO.puts("\n======Given=============\n")
         IO.puts(before)
-        {before_ast, before_comments} = Styler.string_to_quoted_with_comments(before)
+        {before_ast, before_comments} = Quokka.string_to_quoted_with_comments(before)
         dbg(before_ast)
         dbg(before_comments)
         IO.puts("======Expected AST==========\n")
-        {expected_ast, expected_comments} = Styler.string_to_quoted_with_comments(expected)
+        {expected_ast, expected_comments} = Quokka.string_to_quoted_with_comments(expected)
         dbg(expected_ast)
         dbg(expected_comments)
         IO.puts("======Got AST===============\n")
@@ -107,7 +107,7 @@ defmodule Styler.StyleCase do
             dbg(styled_ast)
 
             IO.puts("expected:")
-            dbg(elem(Styler.string_to_quoted_with_comments(expected), 0))
+            dbg(elem(Quokka.string_to_quoted_with_comments(expected), 0))
 
             IO.puts("code:\n#{styled}")
             flunk("")
@@ -137,11 +137,11 @@ defmodule Styler.StyleCase do
   end
 
   def style(code, filename \\ "testfile") do
-    {ast, comments} = Styler.string_to_quoted_with_comments(code)
-    {styled_ast, comments} = Styler.style({ast, comments}, filename, on_error: :raise)
+    {ast, comments} = Quokka.string_to_quoted_with_comments(code)
+    {styled_ast, comments} = Quokka.style({ast, comments}, filename, on_error: :raise)
 
     try do
-      styled_code = styled_ast |> Styler.quoted_to_string(comments) |> String.trim_trailing("\n")
+      styled_code = styled_ast |> Quokka.quoted_to_string(comments) |> String.trim_trailing("\n")
       {styled_ast, styled_code, comments}
     rescue
       exception ->

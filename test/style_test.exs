@@ -1,9 +1,9 @@
-defmodule Styler.StyleTest do
+defmodule Quokka.StyleTest do
   use ExUnit.Case, async: true
 
-  import Styler.Style, only: [displace_comments: 2, shift_comments: 3]
+  import Quokka.Style, only: [displace_comments: 2, shift_comments: 3]
 
-  alias Styler.Style
+  alias Quokka.Style
 
   @code """
   # Above module
@@ -35,7 +35,7 @@ defmodule Styler.StyleTest do
   # After module
   """
 
-  @comments @code |> Styler.string_to_quoted_with_comments() |> elem(1)
+  @comments @code |> Quokka.string_to_quoted_with_comments() |> elem(1)
 
   describe "displace_comments/2" do
     test "Doesn't lose any comments" do

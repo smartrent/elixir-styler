@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.ModuleDirectives do
+defmodule Quokka.Style.ModuleDirectives do
   @moduledoc """
   Styles up module directives!
 
@@ -40,11 +40,11 @@ defmodule Styler.Style.ModuleDirectives do
     * `require`
     * everything else (unchanged)
   """
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
-  alias Styler.AliasEnv
-  alias Styler.Style
-  alias Styler.Zipper
+  alias Quokka.AliasEnv
+  alias Quokka.Style
+  alias Quokka.Zipper
 
   @directives ~w(alias import require use)a
   @attr_directives ~w(moduledoc shortdoc behaviour)a
@@ -319,7 +319,7 @@ defmodule Styler.Style.ModuleDirectives do
     # we can't use the dealias map built into state as that's what things look like before sorting
     # now that we've sorted, it could be different!
     dealiases = AliasEnv.define(aliases)
-    excluded = dealiases |> Map.keys() |> Enum.into(Styler.Config.get(:lifting_excludes))
+    excluded = dealiases |> Map.keys() |> Enum.into(Quokka.Config.get(:lifting_excludes))
     liftable = find_liftable_aliases(requires ++ nondirectives, excluded)
 
     if Enum.any?(liftable) do
@@ -462,7 +462,7 @@ defmodule Styler.Style.ModuleDirectives do
 
   defp sort(directives) do
     directive_strings =
-      if Styler.Config.sort_order() == :ascii do
+      if Quokka.Config.sort_order() == :ascii do
         Enum.map(directives, &{&1, Macro.to_string(&1)})
       else
         # sorting is done with `downcase` to match Credo
@@ -479,7 +479,7 @@ defmodule Styler.Style.ModuleDirectives do
   defp has_skip_comment?(context) do
     Enum.any?(
       context.comments,
-      &String.contains?(&1.text, "elixir-styler:skip-module-reordering")
+      &String.contains?(&1.text, "quokka:skip-module-reordering")
     )
   end
 end

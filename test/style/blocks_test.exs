@@ -8,8 +8,8 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.BlocksTest do
-  use Styler.StyleCase, async: true
+defmodule Quokka.Style.BlocksTest do
+  use Quokka.StyleCase, async: true
 
   describe "with statements" do
     test "replacement due to no (or all removed) arrows" do

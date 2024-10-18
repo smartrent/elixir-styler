@@ -10,10 +10,10 @@
 
 # Branched from https://github.com/doorgan/sourceror/blob/main/test/zipper_test.exs
 # See this issue for context on branching: https://github.com/doorgan/sourceror/issues/67
-defmodule StylerTest.ZipperTest do
+defmodule QuokkaTest.ZipperTest do
   use ExUnit.Case, async: true
 
-  alias Styler.Zipper
+  alias Quokka.Zipper
 
   describe "zip/1" do
     test "creates a zipper from a term" do

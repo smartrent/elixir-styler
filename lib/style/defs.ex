@@ -8,13 +8,13 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.Defs do
+defmodule Quokka.Style.Defs do
   @moduledoc """
   Styles function heads so that they're as small as possible.
 
   The goal is that a function head fits on a single line.
 
-  This isn't a Credo issue, and the formatter is fine with either approach. But Styler has opinions!
+  This isn't a Credo issue, and the formatter is fine with either approach. But Quokka has opinions!
 
   Ex:
 
@@ -33,10 +33,10 @@ defmodule Styler.Style.Defs do
       end
   """
 
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
-  alias Styler.Style
-  alias Styler.Zipper
+  alias Quokka.Style
+  alias Quokka.Zipper
 
   # Optimization / regression
   # it's non-trivial distinguishing `@def "foo"` from `def foo(...)` once you're deeper than the `@`,

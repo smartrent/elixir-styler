@@ -1,7 +1,7 @@
-### Credo Rules Styler Replaces
+### Credo Rules Quokka Replaces
 
-If you're using Credo and Styler, **we recommend disabling these rules in `.credo.exs`** to save on unnecessary checks in CI.
-As long as you're running `mix format --check-formatted` in CI, Styler will be enforcing the rules for you, so checking them with Credo is redundant.
+If you're using Credo and Quokka, **we recommend disabling these rules in `.credo.exs`** to save on unnecessary checks in CI.
+As long as you're running `mix format --check-formatted` in CI, Quokka will be enforcing the rules for you, so checking them with Credo is redundant.
 
 Disabling the rules means updating your `.credo.exs` depending on your configuration:
 
@@ -10,9 +10,9 @@ Disabling the rules means updating your `.credo.exs` depending on your configura
 - if you're using `checks: [...]`, copy/paste the snippet below into the list and ensure none of the checks appear earlier in the list
 
 ```elixir
-# Styler Rewrites
+# Quokka Rewrites
 #
-# The following rules are automatically rewritten by Styler and so disabled here to save time
+# The following rules are automatically rewritten by Quokka and so disabled here to save time
 # Some of the rules have `priority: :high`, meaning Credo runs them unless we explicitly disable them
 # (removing them from this file wouldn't be enough, the `false` is required)
 #

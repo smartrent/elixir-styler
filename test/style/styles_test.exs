@@ -8,15 +8,15 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.StylesTest do
+defmodule Quokka.Style.StylesTest do
   @moduledoc """
   A place for tests that make sure our styles play nicely with each other
   """
-  use Styler.StyleCase, async: true
+  use Quokka.StyleCase, async: true
 
   describe "pipes + defs" do
     test "pipes doesnt abuse meta and break defs" do
-      Styler.Config.set_for_test!(:single_pipe_flag, true)
+      Quokka.Config.set_for_test!(:single_pipe_flag, true)
       assert_style(
         """
         foo
@@ -35,7 +35,7 @@ defmodule Styler.Style.StylesTest do
         """
       )
 
-      Styler.Config.set_for_test!(:single_pipe_flag, false)
+      Quokka.Config.set_for_test!(:single_pipe_flag, false)
     end
   end
 end

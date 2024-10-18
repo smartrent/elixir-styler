@@ -7,7 +7,7 @@
     assert_style: 1,
     assert_style: 2
   ],
-  plugins: [Styler],
-  styler: [alias_lifting_exclude: []],
+  plugins: [Quokka],
+  quokka: [alias_lifting_exclude: []],
   line_length: 122
 ]

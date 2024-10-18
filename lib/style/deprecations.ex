@@ -8,12 +8,12 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.Deprecations do
+defmodule Quokka.Style.Deprecations do
   @moduledoc """
   Transformations to soft or hard deprecations introduced on newer Elixir releases
   """
 
-  @behaviour Styler.Style
+  @behaviour Quokka.Style
 
   def run({node, meta}, ctx), do: {:cont, {style(node), meta}, ctx}
 

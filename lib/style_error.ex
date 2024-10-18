@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.StyleError do
+defmodule Quokka.StyleError do
   @moduledoc """
   Wraps errors raised by Styles during tree traversal.
   """
@@ -20,7 +20,7 @@ defmodule Styler.StyleError do
 
     """
     Error running style #{style} on #{file}
-       Please consider opening an issue at: #{IO.ANSI.light_green()}https://github.com/adobe/elixir-styler/issues/new#{IO.ANSI.reset()}
+       Please consider opening an issue at: #{IO.ANSI.light_green()}https://github.com/smartrent/quokka/issues/new#{IO.ANSI.reset()}
     #{IO.ANSI.default_color()}#{Exception.format(:error, exception)}
     """
   end

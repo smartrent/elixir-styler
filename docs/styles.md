@@ -122,7 +122,7 @@ This also hews to our internal styleguide's "Don't make one-line helper function
 
 Again, the goal is readability and maintainability. `before?/2` and `after?/2` were implemented long after `compare/2`,
 so it's not unusual that a codebase needs a lot of refactoring to be brought up to date with these new functions.
-That's where Styler comes in!
+That's where Quokka comes in!
 
 The examples below use `DateTime.compare/2`, but the same is also done for `NaiveDateTime|Time|Date.compare/2`
 
@@ -140,9 +140,9 @@ DateTime.before?(start, end_date)
 
 ## Implicit Try
 
-Styler will rewrite functions whose entire body is a try/do to instead use the implicit try syntax, per Credo's `Credo.Check.Readability.PreferImplicitTry`
+Quokka will rewrite functions whose entire body is a try/do to instead use the implicit try syntax, per Credo's `Credo.Check.Readability.PreferImplicitTry`
 
-The following example illustrates the most complex case, but Styler happily handles just basic try do/rescue bodies just as easily.
+The following example illustrates the most complex case, but Quokka happily handles just basic try do/rescue bodies just as easily.
 
 ### Before
 
@@ -180,7 +180,7 @@ end
 
 ## Add parenthesis to 0-arity functions and macro definitions
 
-The styler will, by default, add parens to 0-arity function & macro definitions. However, if .credo.exs has `Credo.Check.Readability.ParenthesesOnZeroArityDefs, parens: false`, the styler will remove zero-arity parens. Note that this is the opposite of the default behavior of Credo, which warns on 0-arity functions and macros with parentheses if `parens: true` is not set.
+The quokka will, by default, add parens to 0-arity function & macro definitions. However, if .credo.exs has `Credo.Check.Readability.ParenthesesOnZeroArityDefs, parens: false`, the quokka will remove zero-arity parens. Note that this is the opposite of the default behavior of Credo, which warns on 0-arity functions and macros with parentheses if `parens: true` is not set.
 
 ```elixir
 # Default behavior

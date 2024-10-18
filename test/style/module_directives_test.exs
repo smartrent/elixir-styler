@@ -8,15 +8,15 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.ModuleDirectivesTest do
+defmodule Quokka.Style.ModuleDirectivesTest do
   @moduledoc false
-  use Styler.StyleCase, async: true
+  use Quokka.StyleCase, async: true
 
   describe "skip comment" do
     test "skips module reordering" do
       assert_style("""
       defmodule Foo do
-        # elixir-styler:skip-module-reordering
+        # quokka:skip-module-reordering
         @behaviour Lawful
         require A
         alias A.{A, B}

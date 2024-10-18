@@ -3,10 +3,10 @@
 If you want to skip module reordering, you can add the following comment to the top of the file:
 
 ```elixir
-# elixir-styler:skip-module-reordering
+# quokka:skip-module-reordering
 ```
 
-This will prevent Styler from doing any of the below transformations.
+This will prevent Quokka from doing any of the below transformations.
 
 ## Directive Expansion
 
@@ -138,7 +138,7 @@ alias Foo.Bar
 
 ## Alias Lifting
 
-When a module with three parts is referenced two or more times, styler creates a new alias for that module and uses it.
+When a module with three parts is referenced two or more times, quokka creates a new alias for that module and uses it.
 
 ```elixir
 # Given
@@ -158,14 +158,14 @@ C.bar()
 
 ### Collisions
 
-Styler won't lift aliases that will collide with existing aliases, and likewise won't lift any module whose name would collide with a standard library name.
+Quokka won't lift aliases that will collide with existing aliases, and likewise won't lift any module whose name would collide with a standard library name.
 
-You can specify additional modules to exclude from lifting via the `:alias_lifting_exclude` configuration option. This option accepts both atoms and regexes. For the example above, the following configuration would keep Styler from creating the `alias A.B.C` node:
+You can specify additional modules to exclude from lifting via the `:alias_lifting_exclude` configuration option. This option accepts both atoms and regexes. For the example above, the following configuration would keep Quokka from creating the `alias A.B.C` node:
 
 ```elixir
 # .formatter.exs
 [
-  plugins: [Styler],
-  styler: [alias_lifting_exclude: [:C]],
+  plugins: [Quokka],
+  quokka: [alias_lifting_exclude: [:C]],
 ]
 ```

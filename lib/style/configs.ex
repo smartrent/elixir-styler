@@ -8,7 +8,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.Configs do
+defmodule Quokka.Style.Configs do
   @moduledoc """
   Orders `Config.config/2,3` stanzas in configuration files.
 
@@ -19,7 +19,7 @@ defmodule Styler.Style.Configs do
 
   ### Breakages
 
-  If you configure the same values multiple times, Styler may swap their orders
+  If you configure the same values multiple times, Quokka may swap their orders
 
   **Before**
 
@@ -37,11 +37,11 @@ defmodule Styler.Style.Configs do
 
   **Fix**
 
-  The reason Styler sorts configuration is to help you noticed these duplicated configuration stanzas.
+  The reason Quokka sorts configuration is to help you noticed these duplicated configuration stanzas.
   Delete the duplicative/erroneous stanza and life will be good.
   """
 
-  alias Styler.Style
+  alias Quokka.Style
 
   def run({{:import, _, [{:__aliases__, _, [:Config]}]}, _} = zipper, %{config?: true} = ctx) do
     {:skip, zipper, Map.put(ctx, :mix_config?, true)}

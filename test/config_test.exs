@@ -1,7 +1,7 @@
-defmodule Styler.ConfigTest do
+defmodule Quokka.ConfigTest do
   use ExUnit.Case, async: false
 
-  import Styler.Config
+  import Quokka.Config
 
   test "no config is good times" do
     assert :ok = set!([])

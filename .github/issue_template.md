@@ -1,7 +1,7 @@
 ## Versions
 
 * Elixir: use `elixir --version`
-* Styler: use `mix deps | grep locked | grep styler`
+* Quokka: use `mix deps | grep locked | grep quokka`
 
 ## Example Input
 

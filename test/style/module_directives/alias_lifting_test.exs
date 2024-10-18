@@ -8,9 +8,9 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
+defmodule Quokka.Style.ModuleDirectives.AliasLiftingTest do
   @moduledoc false
-  use Styler.StyleCase, async: true
+  use Quokka.StyleCase, async: true
 
   test "lifts aliases repeated >=2 times from 3 deep" do
     assert_style(
@@ -225,7 +225,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
   end
 
   test "sorts in ascii order when sort_order is :ascii" do
-    Styler.Config.set_for_test!(:sort_order, :ascii)
+    Quokka.Config.set_for_test!(:sort_order, :ascii)
 
     assert_style(
       """
@@ -252,7 +252,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
       """
     )
 
-    Styler.Config.set_for_test!(:sort_order, :alpha)
+    Quokka.Config.set_for_test!(:sort_order, :alpha)
   end
 
   describe "comments stay put" do
@@ -300,7 +300,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
 
   describe "it doesn't lift" do
     test "collisions with configured modules" do
-      Styler.Config.set!(alias_lifting_exclude: ~w(C)a)
+      Quokka.Config.set!(alias_lifting_exclude: ~w(C)a)
 
       assert_style """
       alias Foo.Bar
@@ -309,11 +309,11 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
       A.B.C
       """
 
-      Styler.Config.set!([])
+      Quokka.Config.set!([])
     end
 
     test "collisions with configured regexes" do
-      Styler.Config.set!(alias_lifting_exclude: [~r/A.B/])
+      Quokka.Config.set!(alias_lifting_exclude: [~r/A.B/])
 
       assert_style(
         """
@@ -343,7 +343,7 @@ defmodule Styler.Style.ModuleDirectives.AliasLiftingTest do
         """
       )
 
-      Styler.Config.set!([])
+      Quokka.Config.set!([])
     end
 
     test "collisions with std lib" do

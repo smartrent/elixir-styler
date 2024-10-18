@@ -8,16 +8,16 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 
-defmodule Styler.Style.PipesTest do
-  use Styler.StyleCase, async: true
+defmodule Quokka.Style.PipesTest do
+  use Quokka.StyleCase, async: true
 
   setup do
-    Styler.Config.set_for_test!(:single_pipe_flag, true)
-    Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
+    Quokka.Config.set_for_test!(:single_pipe_flag, true)
+    Quokka.Config.set_for_test!(:pipe_chain_start_flag, true)
 
     on_exit(fn ->
-      Styler.Config.set_for_test!(:single_pipe_flag, false)
-      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
+      Quokka.Config.set_for_test!(:single_pipe_flag, false)
+      Quokka.Config.set_for_test!(:pipe_chain_start_flag, false)
     end)
 
     :ok
@@ -55,7 +55,7 @@ defmodule Styler.Style.PipesTest do
     end
 
     test "fixes nested pipes" do
-      Styler.Config.set_for_test!(:block_pipe_flag, true)
+      Quokka.Config.set_for_test!(:block_pipe_flag, true)
 
       assert_style(
         """
@@ -92,7 +92,7 @@ defmodule Styler.Style.PipesTest do
         """
       )
 
-      Styler.Config.set_for_test!(:block_pipe_flag, false)
+      Quokka.Config.set_for_test!(:block_pipe_flag, false)
 
       assert_style("""
       a
@@ -113,10 +113,10 @@ defmodule Styler.Style.PipesTest do
 
   describe "block pipe starts" do
     setup do
-      Styler.Config.set_for_test!(:block_pipe_flag, true)
+      Quokka.Config.set_for_test!(:block_pipe_flag, true)
 
       on_exit(fn ->
-        Styler.Config.set_for_test!(:block_pipe_flag, false)
+        Quokka.Config.set_for_test!(:block_pipe_flag, false)
       end)
 
       :ok
@@ -407,7 +407,7 @@ defmodule Styler.Style.PipesTest do
     end
 
     test "ignores excluded functions" do
-      Styler.Config.set_for_test!(:block_pipe_exclude, [:case])
+      Quokka.Config.set_for_test!(:block_pipe_exclude, [:case])
 
       assert_style("""
       case x do
@@ -417,7 +417,7 @@ defmodule Styler.Style.PipesTest do
       |> bar()
       """)
 
-      Styler.Config.set_for_test!(:block_pipe_exclude, [])
+      Quokka.Config.set_for_test!(:block_pipe_exclude, [])
     end
   end
 
@@ -613,7 +613,7 @@ defmodule Styler.Style.PipesTest do
         """
       )
 
-      Styler.Config.set_for_test!(:block_pipe_flag, true)
+      Quokka.Config.set_for_test!(:block_pipe_flag, true)
 
       assert_style(
         """
@@ -634,16 +634,16 @@ defmodule Styler.Style.PipesTest do
         """
       )
 
-      Styler.Config.set_for_test!(:block_pipe_flag, false)
+      Quokka.Config.set_for_test!(:block_pipe_flag, false)
     end
   end
 
   describe "single pipe when credo check disabled" do
     setup do
-      Styler.Config.set_for_test!(:single_pipe_flag, false)
+      Quokka.Config.set_for_test!(:single_pipe_flag, false)
 
       on_exit(fn ->
-        Styler.Config.set_for_test!(:single_pipe_flag, true)
+        Quokka.Config.set_for_test!(:single_pipe_flag, true)
       end)
 
       :ok
@@ -678,7 +678,7 @@ defmodule Styler.Style.PipesTest do
       end
       """)
 
-      Styler.Config.set_for_test!(:block_pipe_flag, true)
+      Quokka.Config.set_for_test!(:block_pipe_flag, true)
 
       assert_style(
         """
@@ -700,7 +700,7 @@ defmodule Styler.Style.PipesTest do
         """
       )
 
-      Styler.Config.set_for_test!(:block_pipe_flag, false)
+      Quokka.Config.set_for_test!(:block_pipe_flag, false)
     end
   end
 
@@ -871,7 +871,7 @@ defmodule Styler.Style.PipesTest do
           """
         )
 
-        Styler.Config.set_for_test!(:block_pipe_flag, true)
+        Quokka.Config.set_for_test!(:block_pipe_flag, true)
 
         assert_style(
           """
@@ -895,7 +895,7 @@ defmodule Styler.Style.PipesTest do
           """
         )
 
-        Styler.Config.set_for_test!(:block_pipe_flag, false)
+        Quokka.Config.set_for_test!(:block_pipe_flag, false)
       end
     end
 
@@ -1052,7 +1052,7 @@ defmodule Styler.Style.PipesTest do
 
   describe "n-arity functions" do
     test "doesn't extract >0 arity functions when disabled" do
-      Styler.Config.set_for_test!(:pipe_chain_start_flag, false)
+      Quokka.Config.set_for_test!(:pipe_chain_start_flag, false)
 
       assert_style("""
       M.f(a, b)
@@ -1066,11 +1066,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_flag, true)
+      Quokka.Config.set_for_test!(:pipe_chain_start_flag, true)
     end
 
     test "doesn't extract >0 arity functions when function in excluded_functions" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_functions, ["f", "Enum.map"])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_functions, ["f", "Enum.map"])
 
       assert_style("""
       f(a, b)
@@ -1084,11 +1084,11 @@ defmodule Styler.Style.PipesTest do
       |> Enum.sum()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_functions, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_functions, [])
     end
 
     test "doesn't extract >0 arity functions with atom argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:atom])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:atom])
 
       assert_style("""
       f(:my_atom)
@@ -1096,11 +1096,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with binary argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:binary])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:binary])
 
       assert_style("""
       f("my string", b, c)
@@ -1108,11 +1108,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with bitstring argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:bitstring])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:bitstring])
 
       assert_style("""
       f(<<1>>)
@@ -1126,11 +1126,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with boolean argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:boolean])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:boolean])
 
       assert_style("""
       f(true)
@@ -1144,11 +1144,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with list argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:list])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:list])
 
       assert_style("""
       f([1, 2, 3])
@@ -1167,11 +1167,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with keyword list argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:keyword])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:keyword])
 
       assert_style("""
       f(a: 1, b: 2, c: 3)
@@ -1191,11 +1191,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with map argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:map])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:map])
 
       assert_style("""
       f(%{a: 1, b: 2})
@@ -1203,11 +1203,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with function arguments" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:fn])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:fn])
 
       assert_style("""
       f(&String.length/1)
@@ -1221,11 +1221,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with number argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:number])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:number])
 
       assert_style("""
       f(1)
@@ -1240,11 +1240,11 @@ defmodule Styler.Style.PipesTest do
       """)
 
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with regex argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:regex])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:regex])
 
       assert_style("""
       Regex.run(~r/foo/, "foobar")
@@ -1252,11 +1252,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "doesn't extract >0 arity functions with tuple argument" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:tuple])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [:tuple])
 
       assert_style("""
       f({1, 2, 3})
@@ -1264,11 +1264,11 @@ defmodule Styler.Style.PipesTest do
       |> h()
       """)
 
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
     end
 
     test "extracts >0 arity functions with non-excluded argument types" do
-      Styler.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
+      Quokka.Config.set_for_test!(:pipe_chain_start_excluded_argument_types, [])
 
       assert_style(
         """
